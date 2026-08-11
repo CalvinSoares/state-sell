@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { AdminNav } from "@/src/shared/components/app/AdminNav";
 import { useRotular, type RamoOpcao } from "../hook/rotular.hook";
 
 /**
@@ -46,6 +47,7 @@ export function Rotulador({ ramos }: { ramos: RamoOpcao[] }) {
 
   return (
     <main style={{ maxWidth: 720, margin: "2rem auto", padding: "0 1.25rem" }}>
+      <AdminNav atual="Rotular" />
       <BarraProgresso restantes={r.restantes} total={r.totalRotulados} progresso={r.progresso} />
 
       <section
@@ -215,15 +217,9 @@ function Botao({
 
 function Centro({ children }: { children: React.ReactNode }) {
   return (
-    <main
-      style={{
-        maxWidth: 560,
-        margin: "6rem auto",
-        padding: "0 1.25rem",
-        textAlign: "center",
-      }}
-    >
-      {children}
+    <main style={{ maxWidth: 560, margin: "2rem auto", padding: "0 1.25rem" }}>
+      <AdminNav atual="Rotular" />
+      <div style={{ textAlign: "center", marginTop: "4rem" }}>{children}</div>
     </main>
   );
 }

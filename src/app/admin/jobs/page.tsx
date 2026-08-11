@@ -1,4 +1,5 @@
 import { ultimasExecucoes } from "@/src/server/db/repositorios/admin.repo";
+import { AdminNav } from "@/src/shared/components/app/AdminNav";
 
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,7 @@ export default async function JobsPage() {
 
   return (
     <main style={{ maxWidth: 820, margin: "2rem auto", padding: "0 1.25rem" }}>
+      <AdminNav atual="Jobs" />
       <h1 style={{ fontSize: "1.4rem" }}>Jobs — coleta</h1>
       {execucoes.length === 0 ? (
         <p style={{ color: "var(--suave)" }}>Nenhuma execução ainda.</p>

@@ -58,21 +58,33 @@ export async function emailPorAssinante(assinanteId: string): Promise<string | n
   return l?.email ?? null;
 }
 
+const CAMPOS_PAINEL = {
+  id: assinante.id,
+  email: assinante.email,
+  status: assinante.status,
+  ramos: perfilBusca.ramos,
+  municipiosIbge: perfilBusca.municipiosIbge,
+  uf: perfilBusca.uf,
+  tetoValorCentavos: perfilBusca.tetoValorCentavos,
+};
+
 /** Painel do assinante: dados básicos + perfil, por e-mail. */
 export async function painelPorEmail(email: string) {
   const [l] = await db
-    .select({
-      id: assinante.id,
-      email: assinante.email,
-      status: assinante.status,
-      ramos: perfilBusca.ramos,
-      municipiosIbge: perfilBusca.municipiosIbge,
-      uf: perfilBusca.uf,
-      tetoValorCentavos: perfilBusca.tetoValorCentavos,
-    })
+    .select(CAMPOS_PAINEL)
     .from(assinante)
     .leftJoin(perfilBusca, eq(perfilBusca.assinanteId, assinante.id))
     .where(eq(assinante.email, email.toLowerCase()));
+  return l ?? null;
+}
+
+/** Mesmo shape, por id — para a visão do admin (/admin/assinantes/[id]). */
+export async function painelPorId(id: string) {
+  const [l] = await db
+    .select(CAMPOS_PAINEL)
+    .from(assinante)
+    .leftJoin(perfilBusca, eq(perfilBusca.assinanteId, assinante.id))
+    .where(eq(assinante.id, id));
   return l ?? null;
 }
 

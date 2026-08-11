@@ -48,3 +48,11 @@ export function municipioPorCodigo(codigoIbge: string): Municipio | undefined {
 export function totalMunicipios(): number {
   return MUNICIPIOS.length;
 }
+
+/** Texto da região a partir do perfil: cidade única, várias cidades ou UF inteira. */
+export function regiaoLabel(municipiosIbge: string[] | null | undefined, uf: string | null): string {
+  const n = municipiosIbge?.length ?? 0;
+  if (n === 1) return municipioPorCodigo(municipiosIbge![0]!)?.nome ?? "sua região";
+  if (n > 1) return "suas cidades";
+  return uf ? `todo o estado de ${uf}` : "sua região";
+}
