@@ -58,6 +58,24 @@ export async function emailPorAssinante(assinanteId: string): Promise<string | n
   return l?.email ?? null;
 }
 
+/** Painel do assinante: dados básicos + perfil, por e-mail. */
+export async function painelPorEmail(email: string) {
+  const [l] = await db
+    .select({
+      id: assinante.id,
+      email: assinante.email,
+      status: assinante.status,
+      ramos: perfilBusca.ramos,
+      municipiosIbge: perfilBusca.municipiosIbge,
+      uf: perfilBusca.uf,
+      tetoValorCentavos: perfilBusca.tetoValorCentavos,
+    })
+    .from(assinante)
+    .leftJoin(perfilBusca, eq(perfilBusca.assinanteId, assinante.id))
+    .where(eq(assinante.email, email.toLowerCase()));
+  return l ?? null;
+}
+
 export async function ativarAssinante(email: string): Promise<void> {
   await db
     .update(assinante)

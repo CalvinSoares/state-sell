@@ -98,6 +98,28 @@ export async function contratacoesCandidatas(agora: Date): Promise<ContratacaoPa
   return [...mapa.values()];
 }
 
+/** Alertas do assinante para o painel (mais recentes primeiro). */
+export async function alertasDoAssinante(assinanteId: string, limite = 30) {
+  return db
+    .select({
+      alertaId: alerta.id,
+      ramoSlug: alerta.ramoSlug,
+      status: alerta.status,
+      enviadoEm: alerta.enviadoEm,
+      orgaoRazaoSocial: contratacao.orgaoRazaoSocial,
+      municipioNome: contratacao.municipioNome,
+      dataEncerramentoProposta: contratacao.dataEncerramentoProposta,
+      linkSistemaOrigem: contratacao.linkSistemaOrigem,
+      itemDescricao: itemContratacao.descricao,
+    })
+    .from(alerta)
+    .innerJoin(contratacao, eq(contratacao.id, alerta.contratacaoId))
+    .innerJoin(itemContratacao, eq(itemContratacao.id, alerta.itemIdPrincipal))
+    .where(eq(alerta.assinanteId, assinanteId))
+    .orderBy(sql`${alerta.criadoEm} desc`)
+    .limit(limite);
+}
+
 export type CriarAlertaInput = {
   assinanteId: string;
   contratacaoId: string;

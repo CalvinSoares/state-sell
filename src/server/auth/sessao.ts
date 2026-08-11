@@ -9,7 +9,12 @@
 const COOKIE_SESSAO = "ss_sessao";
 const VALIDADE_MS = 1000 * 60 * 60 * 12; // 12h
 
+/** Cookie do backoffice (path /admin). */
 export const NOME_COOKIE_SESSAO = COOKIE_SESSAO;
+/** Cookie da área do assinante (path /). */
+export const NOME_COOKIE_PUBLICO = "ss_assinante";
+/** Validade do magic link de acesso (curta, uso único na prática pelo exp). */
+export const VALIDADE_MAGIC_MS = 1000 * 60 * 30; // 30 min
 
 type Payload = { email: string; exp: number };
 
@@ -37,13 +42,17 @@ async function chaveHmac(segredo: string): Promise<CryptoKey> {
   );
 }
 
-/** Gera o valor do cookie: base64url(payload).base64url(assinatura). */
+/**
+ * Gera o valor assinado: base64url(payload).base64url(assinatura).
+ * `validadeMs` permite token curto (magic link) ou sessão longa (cookie).
+ */
 export async function assinarSessao(
   email: string,
   segredo: string,
   agoraMs: number,
+  validadeMs: number = VALIDADE_MS,
 ): Promise<string> {
-  const payload: Payload = { email: email.toLowerCase(), exp: agoraMs + VALIDADE_MS };
+  const payload: Payload = { email: email.toLowerCase(), exp: agoraMs + validadeMs };
   const corpo = base64url(new TextEncoder().encode(JSON.stringify(payload)));
   const chave = await chaveHmac(segredo);
   const assinatura = new Uint8Array(

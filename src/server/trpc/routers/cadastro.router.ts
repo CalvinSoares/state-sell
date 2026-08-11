@@ -2,7 +2,7 @@ import { z } from "zod";
 import { env } from "@/src/env";
 import { RAMOS } from "@/content/ramos";
 import { FAIXAS_TETO, tetoParaCentavos, type FaixaTeto } from "@/src/shared/config/faixas-teto";
-import { assinarSessao } from "@/src/server/auth/sessao";
+import { assinarSessao, VALIDADE_MAGIC_MS } from "@/src/server/auth/sessao";
 import { criarOuAtualizarAssinante } from "@/src/server/db/repositorios/assinante.repo";
 import { enviarEmailBruto } from "@/src/server/alerta/enviar.action";
 import { buscarMunicipios, municipioPorCodigo } from "@/src/server/ibge/municipios";
@@ -65,9 +65,9 @@ export const cadastroRouter = router({
       tetoValorCentavos: tetoParaCentavos(input.teto),
     });
 
-    // magic link de confirmação — reaproveita a sessão assinada
-    const token = await assinarSessao(email, env.AUTH_SECRET ?? "sem-segredo", Date.now());
-    const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}`;
+    // magic link de confirmação (curto). novo=1 → cai em /pronto (onboarding).
+    const token = await assinarSessao(email, env.AUTH_SECRET ?? "sem-segredo", Date.now(), VALIDADE_MAGIC_MS);
+    const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}&novo=1`;
     await enviarEmailBruto(
       email,
       "Confirme seu e-mail — StateSell",
@@ -79,4 +79,24 @@ export const cadastroRouter = router({
     // Nunca revela se o e-mail já existia. Sempre a mesma resposta.
     return { ok: true };
   }),
+
+  /**
+   * Login de quem já é assinante: manda um link de acesso. Resposta sempre igual,
+   * exista ou não o e-mail (não revela cadastro). Ver cadastro-do-assinante.md.
+   */
+  enviarLinkAcesso: publicProcedure
+    .input(z.object({ email: z.string().email("Digite um e-mail válido") }))
+    .mutation(async ({ input }) => {
+      const email = input.email.trim().toLowerCase();
+      const token = await assinarSessao(email, env.AUTH_SECRET ?? "sem-segredo", Date.now(), VALIDADE_MAGIC_MS);
+      const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}`;
+      await enviarEmailBruto(
+        email,
+        "Seu link de acesso — StateSell",
+        `<p>Aqui está seu link para entrar (vale por 30 minutos):</p>
+         <p><a href="${url}">Entrar no StateSell</a></p>`,
+        `Seu link para entrar (vale 30 min):\n\n${url}`,
+      );
+      return { ok: true };
+    }),
 });
