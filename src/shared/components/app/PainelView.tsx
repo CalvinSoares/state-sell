@@ -1,5 +1,6 @@
 import { RAMOS } from "@/content/ramos";
 import { prazoTexto } from "@/src/shared/utils/data";
+import { linkDoEdital } from "@/src/server/alerta/compor";
 
 const ROTULO = new Map(RAMOS.map((r) => [r.slug, r.rotulo]));
 
@@ -10,6 +11,7 @@ export type AlertaView = {
   itemDescricao: string;
   dataEncerramentoProposta: Date | null;
   linkSistemaOrigem: string | null;
+  numeroControlePncp: string;
 };
 
 type Props = {
@@ -58,11 +60,13 @@ export function PainelView({ regiao, ramos, alertas, agora, contexto = "assinant
                   Prazo: {prazoTexto(a.dataEncerramentoProposta, agora)}
                 </p>
               ) : null}
-              {a.linkSistemaOrigem && a.linkSistemaOrigem !== "SEM PUBLICAÇÃO" ? (
-                <a href={a.linkSistemaOrigem} target="_blank" rel="noreferrer">
-                  Ver o edital
-                </a>
-              ) : null}
+              <a
+                href={linkDoEdital(a.linkSistemaOrigem, a.numeroControlePncp)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Ver o edital
+              </a>
             </li>
           ))}
         </ul>

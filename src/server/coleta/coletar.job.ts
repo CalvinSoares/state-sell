@@ -89,8 +89,12 @@ async function processarCombinacao(
     // Só o que está divulgado gera alerta — descartamos o resto na coleta.
     const divulgadas = envelope.data.filter((c) => c.situacaoCompraId === SITUACAO_DIVULGADA);
 
+    let interrompida = false;
     for (const bruta of divulgadas) {
-      if (estourou()) break;
+      if (estourou()) {
+        interrompida = true;
+        break;
+      }
       const c = mapearContratacao(bruta);
       const { id, nova } = await upsertContratacao(c);
       if (nova) novas++;
@@ -103,7 +107,12 @@ async function processarCombinacao(
       }
     }
 
-    await salvarCursor(chave, proximoCursor(pagina, envelope.paginasRestantes).ultimaPagina, dataFinal);
+    // Só avança o cursor se a página foi processada inteira. Interrompida no
+    // meio pelo orçamento de tempo → mantém a página para o próximo tick.
+    const proximaPagina = interrompida
+      ? pagina
+      : proximoCursor(pagina, envelope.paginasRestantes).ultimaPagina;
+    await salvarCursor(chave, proximaPagina, dataFinal);
     await finalizarExecucao(execucaoId, { paginasLidas, novas, atualizadas, erros, status: "ok" });
   } catch (erro) {
     erros++;

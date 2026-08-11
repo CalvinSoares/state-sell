@@ -94,3 +94,17 @@ export async function ativarAssinante(email: string): Promise<void> {
     .set({ status: "ativo", verificadoEm: new Date() })
     .where(eq(assinante.email, email));
 }
+
+/**
+ * Suprime um assinante (bounce forte ou reclamação de spam). Não apaga —
+ * marca status "suprimido" para nunca mais enviar. Ver alertas-e-envio.md.
+ * Retorna quantos foram afetados.
+ */
+export async function suprimirAssinante(email: string): Promise<number> {
+  const linhas = await db
+    .update(assinante)
+    .set({ status: "suprimido" })
+    .where(eq(assinante.email, email.toLowerCase()))
+    .returning({ id: assinante.id });
+  return linhas.length;
+}

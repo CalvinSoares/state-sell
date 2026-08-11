@@ -10,6 +10,12 @@ import { UFS } from "@/src/shared/config/ufs";
 import { publicProcedure, router } from "../trpc";
 
 const SLUGS = RAMOS.map((r) => r.slug) as [string, ...string[]];
+
+/** Nunca assinar com segredo público. Sem AUTH_SECRET, o fluxo falha alto. */
+function exigirSegredo(): string {
+  if (!env.AUTH_SECRET) throw new Error("AUTH_SECRET não configurado");
+  return env.AUTH_SECRET;
+}
 const FAIXAS = FAIXAS_TETO.map((f) => f.valor) as [FaixaTeto, ...FaixaTeto[]];
 
 const CadastroSchema = z
@@ -56,7 +62,7 @@ export const cadastroRouter = router({
     });
 
     // magic link de confirmação (curto). novo=1 → cai em /pronto (onboarding).
-    const token = await assinarSessao(email, env.AUTH_SECRET ?? "sem-segredo", Date.now(), VALIDADE_MAGIC_MS);
+    const token = await assinarSessao(email, exigirSegredo(), Date.now(), VALIDADE_MAGIC_MS);
     const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}&novo=1`;
     await enviarEmailBruto(
       email,
@@ -78,7 +84,7 @@ export const cadastroRouter = router({
     .input(z.object({ email: z.string().email("Digite um e-mail válido") }))
     .mutation(async ({ input }) => {
       const email = input.email.trim().toLowerCase();
-      const token = await assinarSessao(email, env.AUTH_SECRET ?? "sem-segredo", Date.now(), VALIDADE_MAGIC_MS);
+      const token = await assinarSessao(email, exigirSegredo(), Date.now(), VALIDADE_MAGIC_MS);
       const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}`;
       await enviarEmailBruto(
         email,

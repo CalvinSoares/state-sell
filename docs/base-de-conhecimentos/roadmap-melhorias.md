@@ -25,10 +25,32 @@ A única métrica que faz alguém cancelar é o falso positivo. É aqui que o pr
 
 ## Fase 2 — Entregabilidade e operação
 
-- **2.1 — Envio real.** Domínio verificado no Resend (ou `onboarding@resend.dev` para si), teste no Gmail/celular, virar `live`.
-- **2.2 — Webhook do Resend.** Bounce/reclamação → suprimir assinante automaticamente. Protege a reputação do domínio.
-- **2.3 — `/status` + alarme de coleta parada.** Coleta morta em silêncio parece funcionamento normal — a falha mais perigosa.
-- **2.4 — Deep-link no edital.** Montar o link direto da contratação no PNCP quando `linkSistemaOrigem = "SEM PUBLICAÇÃO"`.
+- **2.1 — Remetente configurável** (`RESEND_FROM`): use `onboarding@resend.dev` para testar sem domínio; troque para o domínio verificado no `live`. ✔
+- **2.2 — Webhook do Resend** (`/api/webhook/resend`): valida assinatura Svix e suprime o assinante em bounce/reclamação. ✔
+- **2.3 — `/status`** pública: última coleta ok, lidas 24h, alarme se > 36h. ✔
+- **2.4 — Deep-link no edital**: monta o link direto da contratação no PNCP quando não há `linkSistemaOrigem`. ✔ (no e-mail e no painel)
+
+## Auditoria de segurança (11/08/2026)
+
+Rodada por agente lendo o código. **Corrigido:**
+
+- **Login admin sem prova de posse** → agora exige `ADMIN_PASSWORD` (2º fator, comparação de tempo constante) além da allowlist.
+- **Regex de cookie sem âncora** (admin) → ancorada.
+- **`CRON_SECRET` comparação não-constante** → tempo constante.
+- **Assinatura de token com fallback `"sem-segredo"`** → falha alto sem `AUTH_SECRET`.
+- **Cursor avançava interrompido no meio da página** → só avança se a página fechou inteira.
+- **Feedback não idempotente** (scanner de e-mail poluía dados) → idempotente por alerta.
+- **E-mail duplicado sob concorrência** → reivindicação atômica `pendente→enviando` (`for update skip locked`).
+- **`/api/cron/tick` sem isolamento** → cada etapa em try/catch.
+
+**Pendente (decisão de produto / fase futura):**
+
+- **Rate limit / CAPTCHA** nas procedures públicas de e-mail (`criar`, `enviarLinkAcesso`) — risco de mail-bombing. Precisa de Upstash ou similar. **Prioridade antes do lançamento público.**
+- **Teto diário de alertas descarta excedente** (`alertarJob`): o 6º+ alerta concorrente nunca sai enquanto os 5 primeiros seguem abertos. Redesenhar para contar enviados no dia.
+- **Audiência de token** (admin/assinante/magic usam mesmo formato): adicionar claim `aud`.
+- **GET com efeito colateral** em `/verificar` e `/feedback`: idealmente POST com confirmação de 1 clique.
+- **Magic link reutilizável na validade** (30 min, sem nonce de uso único).
+- **N+1 e carga sem limite** no resumo semanal e na seleção de candidatas (escala).
 
 ## Fase 3 — Cobertura e escala
 

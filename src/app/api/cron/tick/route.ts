@@ -13,14 +13,23 @@ export const dynamic = "force-dynamic";
  * acabar na coleta, as demais pegam o que já entrou e o próximo tick continua.
  * Ver coleta-e-jobs.md e ADR-002.
  */
+async function etapa<T>(fn: () => Promise<T>): Promise<T | { erro: string }> {
+  try {
+    return await fn();
+  } catch (e) {
+    // Uma etapa que falha não pode derrubar as outras — cada uma é idempotente.
+    return { erro: e instanceof Error ? e.message : String(e) };
+  }
+}
+
 export async function GET(req: Request) {
   const naoAutorizado = autorizarCron(req);
   if (naoAutorizado) return naoAutorizado;
 
-  const coletar = await coletarJob();
-  const casar = await casarJob();
-  const alertar = await alertarJob();
-  const enviar = await enviarJob();
+  const coletar = await etapa(coletarJob);
+  const casar = await etapa(casarJob);
+  const alertar = await etapa(alertarJob);
+  const enviar = await etapa(enviarJob);
 
   return Response.json({ ok: true, etapa: "tick", coletar, casar, alertar, enviar });
 }

@@ -61,6 +61,23 @@ export function tituloCaso(s: string): string {
     .join(" ");
 }
 
+/**
+ * Link do edital. Prefere o link do sistema de origem quando é uma URL de
+ * verdade; senão monta o link direto da contratação no PNCP a partir do
+ * numeroControlePncp ("CNPJ-1-SEQUENCIAL/ANO"). Puro.
+ */
+export function linkDoEdital(linkSistemaOrigem: string | null, numeroControlePncp: string): string {
+  if (linkSistemaOrigem && /^https?:\/\//i.test(linkSistemaOrigem.trim())) {
+    return linkSistemaOrigem.trim();
+  }
+  const m = numeroControlePncp.match(/^(\d+)-\d+-(\d+)\/(\d+)$/);
+  if (m) {
+    const [, cnpj, sequencial, ano] = m;
+    return `https://pncp.gov.br/app/editais/${cnpj}/${ano}/${Number(sequencial)}`;
+  }
+  return "https://pncp.gov.br/app/editais";
+}
+
 /** Corta a descrição CATMAT no primeiro atributo ("Nome, attr: x") para o e-mail. */
 function nomeCurtoDoItem(descricao: string): string {
   const semAtributos = descricao.split(/,|\s\w+:/)[0] ?? descricao;
@@ -78,7 +95,7 @@ export function comporEmail(
 ): EmailAlerta {
   const prazo = prazoTexto(c.dataEncerramentoProposta, agora);
   const diaSemana = prazo.split(",")[0];
-  const linkEdital = c.linkSistemaOrigem ?? `https://pncp.gov.br/app/editais`;
+  const linkEdital = linkDoEdital(c.linkSistemaOrigem, c.numeroControlePncp);
 
   const linhas: string[] = [];
 

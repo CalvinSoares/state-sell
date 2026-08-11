@@ -1,5 +1,26 @@
 import { describe, expect, it } from "vitest";
-import { comporEmail, type DadosContratacao, type DadosItemPrincipal } from "./compor";
+import { comporEmail, linkDoEdital, type DadosContratacao, type DadosItemPrincipal } from "./compor";
+
+describe("linkDoEdital", () => {
+  it("usa o link do sistema de origem quando é URL real", () => {
+    expect(linkDoEdital("https://compras.sorocaba.sp.gov.br/x", "01572597000101-1-000158/2026")).toBe(
+      "https://compras.sorocaba.sp.gov.br/x",
+    );
+  });
+  it("monta deep-link do PNCP quando não há publicação", () => {
+    expect(linkDoEdital("SEM PUBLICAÇÃO", "01572597000101-1-000158/2026")).toBe(
+      "https://pncp.gov.br/app/editais/01572597000101/2026/158",
+    );
+  });
+  it("deep-link também quando o link é nulo", () => {
+    expect(linkDoEdital(null, "01572597000101-1-000158/2026")).toContain(
+      "/app/editais/01572597000101/2026/158",
+    );
+  });
+  it("cai no genérico se o número de controle for inesperado", () => {
+    expect(linkDoEdital(null, "formato-estranho")).toBe("https://pncp.gov.br/app/editais");
+  });
+});
 
 const AGORA = new Date("2026-08-11T12:00:00-03:00");
 const APP = "https://prefeituraquer.com.br";

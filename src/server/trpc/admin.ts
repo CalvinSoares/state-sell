@@ -7,7 +7,8 @@ import { publicProcedure } from "./trpc";
 async function emailAdmin(headers: Headers): Promise<string | null> {
   if (!env.AUTH_SECRET) return null;
   const cookie = headers.get("cookie") ?? "";
-  const match = cookie.match(new RegExp(`${NOME_COOKIE_SESSAO}=([^;]+)`));
+  // âncora (?:^|;\s*) para não casar cookie com nome-sufixo (ex.: xss_sessao=).
+  const match = cookie.match(new RegExp(`(?:^|;\\s*)${NOME_COOKIE_SESSAO}=([^;]+)`));
   const token = match?.[1];
   const email = await verificarSessao(token, env.AUTH_SECRET, Date.now());
   if (!email || !adminEmails().includes(email)) return null;

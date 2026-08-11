@@ -4,9 +4,9 @@ import { RAMOS_POR_SLUG } from "@/content/ramos";
 import { log } from "@/src/server/log";
 import { assinarValor } from "@/src/server/auth/token";
 import {
-  alertasPendentes,
   marcarEnviado,
   marcarFalhou,
+  reivindicarParaEnvio,
 } from "@/src/server/db/repositorios/alerta.repo";
 import { comporEmail } from "./compor";
 import { enviarEmailAlerta } from "./enviar.action";
@@ -24,7 +24,9 @@ export type ResultadoEnviar = { pendentes: number; enviados: number; simulados: 
 /** Envia (ou simula) alertas pendentes. Só I/O — a composição é pura. */
 export async function enviarJob(agora: () => Date = () => new Date()): Promise<ResultadoEnviar> {
   const momento = agora();
-  const pendentes = await alertasPendentes();
+  // Reivindica atomicamente (pendente→enviando): evita envio duplicado se dois
+  // ticks se sobrepuserem. Ver auditoria #8.
+  const pendentes = await reivindicarParaEnvio();
   let enviados = 0;
   let simulados = 0;
   let falhas = 0;

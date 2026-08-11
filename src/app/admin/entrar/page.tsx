@@ -21,6 +21,14 @@ export default function EntrarPage({
           autoComplete="email"
           style={{ padding: ".7rem", borderRadius: 8, border: "1px solid var(--borda)" }}
         />
+        <input
+          type="password"
+          name="senha"
+          required
+          placeholder="senha"
+          autoComplete="current-password"
+          style={{ padding: ".7rem", borderRadius: 8, border: "1px solid var(--borda)" }}
+        />
         <button
           type="submit"
           style={{

@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, gt, isNull, sql } from "drizzle-orm";
+import { and, eq, gt, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@/src/server/db";
 import {
   alerta,
@@ -111,6 +111,7 @@ export async function alertasDoAssinante(assinanteId: string, limite = 30) {
       municipioNome: contratacao.municipioNome,
       dataEncerramentoProposta: contratacao.dataEncerramentoProposta,
       linkSistemaOrigem: contratacao.linkSistemaOrigem,
+      numeroControlePncp: contratacao.numeroControlePncp,
       itemDescricao: itemContratacao.descricao,
     })
     .from(alerta)
@@ -146,7 +147,7 @@ export async function criarAlertasPendentes(entradas: CriarAlertaInput[]): Promi
 }
 
 /** Alertas pendentes com tudo que o e-mail precisa. */
-export async function alertasPendentes(limite = 200) {
+function selectDetalhesAlerta() {
   return db
     .select({
       alertaId: alerta.id,
@@ -178,9 +179,36 @@ export async function alertasPendentes(limite = 200) {
         eq(classificacaoItem.itemId, alerta.itemIdPrincipal),
         eq(classificacaoItem.ramoSlug, alerta.ramoSlug),
       ),
-    )
+    );
+}
+
+/** Amostra de pendentes (só leitura — usada em diagnóstico/smoke). */
+export async function alertasPendentes(limite = 200) {
+  return selectDetalhesAlerta()
     .where(and(eq(alerta.status, "pendente"), isNull(alerta.enviadoEm)))
     .limit(limite);
+}
+
+/**
+ * Reivindica pendentes para envio de forma ATÔMICA: vira o status para
+ * "enviando" e devolve os detalhes. Duas execuções concorrentes nunca pegam
+ * a mesma linha (o UPDATE trava), evitando e-mail duplicado. Ver auditoria #8.
+ */
+export async function reivindicarParaEnvio(limite = 200) {
+  const claimed = await db.execute(sql`
+    update alerta set status = 'enviando'
+    where id in (
+      select id from alerta
+      where status = 'pendente' and enviado_em is null
+      order by criado_em
+      limit ${limite}
+      for update skip locked
+    )
+    returning id
+  `);
+  const ids = (claimed as unknown as { id: string }[]).map((r) => r.id);
+  if (ids.length === 0) return [];
+  return selectDetalhesAlerta().where(inArray(alerta.id, ids));
 }
 
 /** Marca enviado na mesma transação lógica do retorno do provedor. */
@@ -191,9 +219,20 @@ export async function marcarEnviado(alertaId: string, resendId: string | null, e
     .where(and(eq(alerta.id, alertaId), isNull(alerta.enviadoEm)));
 }
 
-/** Registra feedback de um alerta (util=false = "não era pra mim"). Idempotente-ish. */
-export async function registrarFeedback(alertaId: string, util: boolean, motivo?: string) {
+/**
+ * Registra feedback de um alerta (util=false = "não era pra mim"). Idempotente:
+ * cliques repetidos ou prefetch de scanner de e-mail não geram duplicatas.
+ * Retorna true se foi um registro novo.
+ */
+export async function registrarFeedback(alertaId: string, util: boolean, motivo?: string): Promise<boolean> {
+  const [existe] = await db
+    .select({ id: feedbackAlerta.id })
+    .from(feedbackAlerta)
+    .where(eq(feedbackAlerta.alertaId, alertaId))
+    .limit(1);
+  if (existe) return false;
   await db.insert(feedbackAlerta).values({ alertaId, util, motivo });
+  return true;
 }
 
 export async function marcarFalhou(alertaId: string, motivo: string) {

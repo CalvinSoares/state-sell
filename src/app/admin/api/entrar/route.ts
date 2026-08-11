@@ -2,17 +2,32 @@ import { NextResponse } from "next/server";
 import { adminEmails, env } from "@/src/env";
 import { assinarSessao, NOME_COOKIE_SESSAO } from "@/src/server/auth/sessao";
 
+/** Comparação de tempo constante para a senha. */
+function igualConstante(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
 /**
- * Valida e-mail contra a allowlist e emite cookie de sessão assinado.
- * Sem allowlist ou fora dela → volta para /admin/entrar?erro=1 (não confirma o motivo).
+ * Login do backoffice: exige e-mail na allowlist E a senha (ADMIN_PASSWORD).
+ * A allowlist sozinha não basta — e-mail não é segredo. Sem ADMIN_PASSWORD
+ * configurada, o login é bloqueado em produção (nunca liberar sem 2º fator).
+ * Resposta de erro é sempre igual (não confirma o que falhou).
  */
 export async function POST(req: Request) {
   const form = await req.formData();
   const email = String(form.get("email") ?? "").trim().toLowerCase();
+  const senha = String(form.get("senha") ?? "");
   const base = env.NEXT_PUBLIC_APP_URL;
+  const erro = NextResponse.redirect(new URL("/admin/entrar?erro=1", base), { status: 303 });
 
-  if (!env.AUTH_SECRET || !email || !adminEmails().includes(email)) {
-    return NextResponse.redirect(new URL("/admin/entrar?erro=1", base), { status: 303 });
+  const emailOk = Boolean(email) && adminEmails().includes(email);
+  const senhaOk = Boolean(env.ADMIN_PASSWORD) && igualConstante(senha, env.ADMIN_PASSWORD!);
+
+  if (!env.AUTH_SECRET || !emailOk || !senhaOk) {
+    return erro;
   }
 
   const token = await assinarSessao(email, env.AUTH_SECRET, Date.now());
