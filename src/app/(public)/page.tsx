@@ -6,7 +6,7 @@ export default function LandingPage() {
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "3.5rem 1.25rem 5rem" }}>
       <p style={{ color: "var(--acento)", fontWeight: 700, margin: 0, letterSpacing: ".02em" }}>
-        StateSell
+        Prefeitura Quer
       </p>
 
       <h1 style={{ fontSize: "2.3rem", lineHeight: 1.15, marginTop: ".5rem" }}>
@@ -67,6 +67,25 @@ export default function LandingPage() {
       <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
         <Botao href="/cadastro">Começar agora</Botao>
       </div>
+
+      <footer
+        style={{
+          marginTop: "3.5rem",
+          paddingTop: "1.5rem",
+          borderTop: "1px solid var(--borda)",
+          color: "var(--suave)",
+          fontSize: ".8rem",
+        }}
+      >
+        <p style={{ margin: 0 }}>
+          Prefeitura Quer é um serviço independente. <strong>Não temos vínculo</strong> com nenhuma
+          prefeitura, governo ou órgão público — a gente só lê os anúncios oficiais, que são
+          públicos, e te avisa.
+        </p>
+        <p style={{ margin: ".5rem 0 0" }}>
+          Já é assinante? <a href="/entrar">Entrar</a>.
+        </p>
+      </footer>
     </main>
   );
 }

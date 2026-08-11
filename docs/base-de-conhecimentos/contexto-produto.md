@@ -1,4 +1,4 @@
-# Contexto de Produto — StateSell
+# Contexto de Produto — Prefeitura Quer
 
 > ⭐ Leitura obrigatória. Toda decisão técnica deste projeto se justifica por algo aqui.
 

@@ -5,7 +5,7 @@ import type { EmailAlerta } from "./compor";
 import { decidirEnvio } from "./decidir-envio";
 import { renderHtml, renderTexto } from "./render";
 
-const REMETENTE = "StateSell <avisos@statesell.com.br>";
+const REMETENTE = "Prefeitura Quer <avisos@prefeituraquer.com.br>";
 
 export type ResultadoEnvio = { enviado: boolean; simulado: boolean; resendId: string | null };
 

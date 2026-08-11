@@ -1,4 +1,4 @@
-# Base de Conhecimentos — StateSell
+# Base de Conhecimentos — Prefeitura Quer
 
 > Documentação viva do projeto. Atualizar sempre que evoluírem funcionalidades, contratos ou padrões.
 

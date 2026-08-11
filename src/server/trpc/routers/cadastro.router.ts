@@ -70,7 +70,7 @@ export const cadastroRouter = router({
     const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}&novo=1`;
     await enviarEmailBruto(
       email,
-      "Confirme seu e-mail — StateSell",
+      "Confirme seu e-mail — Prefeitura Quer",
       `<p>Falta um passo: confirme seu e-mail para começar a receber os avisos.</p>
        <p><a href="${url}">Confirmar meu e-mail</a></p>`,
       `Falta um passo: confirme seu e-mail.\n\n${url}`,
@@ -92,9 +92,9 @@ export const cadastroRouter = router({
       const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}`;
       await enviarEmailBruto(
         email,
-        "Seu link de acesso — StateSell",
+        "Seu link de acesso — Prefeitura Quer",
         `<p>Aqui está seu link para entrar (vale por 30 minutos):</p>
-         <p><a href="${url}">Entrar no StateSell</a></p>`,
+         <p><a href="${url}">Entrar na sua conta</a></p>`,
         `Seu link para entrar (vale 30 min):\n\n${url}`,
       );
       return { ok: true };

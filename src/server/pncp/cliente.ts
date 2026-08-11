@@ -17,7 +17,8 @@ const MAX_TENTATIVAS = 3;
 /** Neste endpoint o teto real é 50 (não 500). Ver fonte-pncp.md. */
 export const TAMANHO_PAGINA = 50;
 
-const USER_AGENT = "state-sell/0.1 (+consumidor educado da API publica do PNCP)";
+const USER_AGENT =
+  "prefeitura-quer/0.1 (+consumidor educado da API publica do PNCP; avisos@prefeituraquer.com.br)";
 
 export class PncpError extends Error {
   constructor(

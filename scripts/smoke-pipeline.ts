@@ -14,7 +14,7 @@ import { alertarJob } from "@/src/server/alerta/alertar.job";
 import { alertasPendentes } from "@/src/server/db/repositorios/alerta.repo";
 import { enviarJob } from "@/src/server/alerta/enviar.job";
 
-const EMAIL_TESTE = "smoke+alimentacao@statesell.dev";
+const EMAIL_TESTE = "smoke+alimentacao@prefeituraquer.dev";
 
 async function seed() {
   await db.delete(assinante).where(eq(assinante.email, EMAIL_TESTE));

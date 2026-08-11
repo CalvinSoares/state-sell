@@ -1,4 +1,4 @@
-# Planejamento — StateSell
+# Planejamento — Prefeitura Quer
 
 > Avisa o pequeno negócio quando a prefeitura dele quer comprar exatamente o que ele vende.
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { comporEmail, type DadosContratacao, type DadosItemPrincipal } from "./compor";
 
 const AGORA = new Date("2026-08-11T12:00:00-03:00");
-const APP = "https://statesell.com.br";
+const APP = "https://prefeituraquer.com.br";
 
 function contratacao(over: Partial<DadosContratacao> = {}): DadosContratacao {
   return {

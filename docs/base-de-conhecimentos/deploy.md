@@ -15,8 +15,8 @@
 | `ADMIN_EMAILS` | `voce@dominio.com` | ✅ | allowlist do `/admin` (vírgula separa vários) |
 | `RESEND_API_KEY` | `re_…` | ✅ p/ enviar | chave do Resend |
 | `RESEND_MODE` | `dry` \| `live` | ✅ | **manter `dry` até validar**; `live` libera envio real |
-| `APP_URL` | `https://statesell.com.br` | ✅ | usado em links absolutos server-side |
-| `NEXT_PUBLIC_APP_URL` | `https://statesell.com.br` | ✅ | idem, lado cliente |
+| `APP_URL` | `https://prefeituraquer.com.br` | ✅ | usado em links absolutos server-side |
+| `NEXT_PUBLIC_APP_URL` | `https://prefeituraquer.com.br` | ✅ | idem, lado cliente |
 
 `NODE_ENV=production` é setado pela Vercel automaticamente — não precisa criar.
 
@@ -58,8 +58,8 @@ A `RESEND_API_KEY` **sozinha não basta**. Três coisas precisam estar verdadeir
 
 1. **`NODE_ENV=production` E `RESEND_MODE=live`** — a trava anti-disparo (`decidir-envio.ts`). Em qualquer outra combinação o e-mail é apenas simulado no log. É proposital: evita mandar teste para assinante real.
 
-2. **Domínio verificado no Resend.** O remetente é `avisos@statesell.com.br` (`enviar.action.ts`). Sem verificar o domínio, o Resend **só** deixa enviar de `onboarding@resend.dev` e **só** para o e-mail dono da conta. Para valer em produção:
-   - Resend → Domains → Add Domain → `statesell.com.br`
+2. **Domínio verificado no Resend.** O remetente é `avisos@prefeituraquer.com.br` (`enviar.action.ts`). Sem verificar o domínio, o Resend **só** deixa enviar de `onboarding@resend.dev` e **só** para o e-mail dono da conta. Para valer em produção:
+   - Resend → Domains → Add Domain → `prefeituraquer.com.br`
    - Publicar no DNS os registros que o Resend mostrar: **SPF** (TXT), **DKIM** (CNAMEs) e idealmente **DMARC** (TXT). Ver `alertas-e-envio.md` (entregabilidade).
    - Esperar verificar (minutos a horas).
 

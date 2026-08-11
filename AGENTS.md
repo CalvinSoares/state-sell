@@ -1,4 +1,4 @@
-# StateSell — instruções para agentes
+# Prefeitura Quer — instruções para agentes
 
 Avisa o pequeno negócio quando a prefeitura dele quer comprar exatamente o que ele vende.
 
