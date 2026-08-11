@@ -1,0 +1,34 @@
+[
+  {
+    "descricaoItem": "Detergente neutro, água sanitária e desinfetante para uso geral",
+    "objetoCompra": "AQUISIÇÃO DE MATERIAL DE LIMPEZA E HIGIENE PARA AS ESCOLAS",
+    "unidadeMedida": "litro",
+    "ramoEsperado": "limpeza",
+    "origem": "seed",
+    "origemAmostra": "dirigida"
+  },
+  {
+    "descricaoItem": "Papel higiênico folha dupla e papel toalha interfolhado",
+    "objetoCompra": "AQUISIÇÃO DE MATERIAL DE HIGIENE",
+    "unidadeMedida": "fardo",
+    "ramoEsperado": "limpeza",
+    "origem": "seed",
+    "origemAmostra": "aleatoria"
+  },
+  {
+    "descricaoItem": "Álcool em gel 70%, sabonete líquido e luva descartável",
+    "objetoCompra": "AQUISIÇÃO DE PRODUTOS DE HIGIENIZAÇÃO",
+    "unidadeMedida": "unidade",
+    "ramoEsperado": "limpeza",
+    "origem": "seed",
+    "origemAmostra": "aleatoria"
+  },
+  {
+    "descricaoItem": "Contratação de mão de obra para limpeza e conservação com dedicação exclusiva",
+    "objetoCompra": "CONTRATAÇÃO DE SERVIÇO CONTINUADO DE LIMPEZA COM DEDICAÇÃO EXCLUSIVA DE MÃO DE OBRA",
+    "ramoEsperado": null,
+    "origem": "seed",
+    "origemAmostra": "dirigida",
+    "nota": "NEGATIVO DIFÍCIL — serviço continuado com dedicação exclusiva é porte grande, fora de MEI"
+  }
+]

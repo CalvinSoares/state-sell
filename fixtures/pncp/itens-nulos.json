@@ -1,0 +1,16 @@
+[
+  {
+    "numeroItem": 1,
+    "descricao": "Item com campos nulos para teste de borda",
+    "materialOuServico": "S",
+    "materialOuServicoNome": "Serviço",
+    "valorUnitarioEstimado": null,
+    "valorTotal": null,
+    "quantidade": null,
+    "unidadeMedida": null,
+    "tipoBeneficio": null,
+    "tipoBeneficioNome": null,
+    "criterioJulgamentoNome": null,
+    "situacaoCompraItemNome": null
+  }
+]

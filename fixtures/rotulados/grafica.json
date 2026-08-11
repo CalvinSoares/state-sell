@@ -1,0 +1,34 @@
+[
+  {
+    "descricaoItem": "Confecção de banner em lona com impressão digital",
+    "objetoCompra": "CONTRATAÇÃO DE SERVIÇOS GRÁFICOS PARA CAMPANHAS DE SAÚDE",
+    "unidadeMedida": "metro",
+    "ramoEsperado": "grafica",
+    "origem": "seed",
+    "origemAmostra": "dirigida"
+  },
+  {
+    "descricaoItem": "Impressão de folder e cartilha educativa, papel couché",
+    "objetoCompra": "AQUISIÇÃO DE MATERIAL GRÁFICO PARA A SECRETARIA DE EDUCAÇÃO",
+    "unidadeMedida": "milheiro",
+    "ramoEsperado": "grafica",
+    "origem": "seed",
+    "origemAmostra": "aleatoria"
+  },
+  {
+    "descricaoItem": "Confecção de camiseta com estampa para olimpíada escolar",
+    "objetoCompra": "AQUISIÇÃO DE CAMISETAS PERSONALIZADAS",
+    "unidadeMedida": "unidade",
+    "ramoEsperado": "grafica",
+    "origem": "seed",
+    "origemAmostra": "aleatoria"
+  },
+  {
+    "descricaoItem": "Papel A4 branco 75g resma com 500 folhas",
+    "objetoCompra": "Aquisição de materiais de consumo: capa processo, caixa arquivo, papel A4",
+    "ramoEsperado": null,
+    "origem": "seed",
+    "origemAmostra": "dirigida",
+    "nota": "NEGATIVO DIFÍCIL — papel A4 é material de escritório, não serviço gráfico"
+  }
+]

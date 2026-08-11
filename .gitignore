@@ -1,0 +1,28 @@
+# deps
+node_modules/
+.pnpm-store/
+
+# next
+.next/
+out/
+next-env.d.ts
+
+# build / cache
+dist/
+*.tsbuildinfo
+
+# env
+.env
+.env.local
+.env.*.local
+
+# vercel
+.vercel/
+
+# os / editor
+.DS_Store
+Thumbs.db
+*.log
+
+# scratch
+/tmp-local/

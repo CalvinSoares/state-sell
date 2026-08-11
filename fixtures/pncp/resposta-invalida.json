@@ -1,0 +1,13 @@
+{
+  "data": [
+    {
+      "numeroControlePNCP": "faltando-campos-obrigatorios",
+      "objetoCompra": "Compra sem orgaoEntidade nem datas"
+    }
+  ],
+  "totalRegistros": 1,
+  "totalPaginas": 1,
+  "numeroPagina": 1,
+  "paginasRestantes": 0,
+  "empty": false
+}

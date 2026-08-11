@@ -1,0 +1,26 @@
+:root {
+  --fundo: #fbfaf7;
+  --tinta: #1b1a17;
+  --suave: #6b6a63;
+  --acento: #1f6f43;
+  --borda: #e7e4dc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--fundo);
+  color: var(--tinta);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.55;
+}
+
+a {
+  color: var(--acento);
+}

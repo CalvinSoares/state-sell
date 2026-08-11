@@ -1,0 +1,42 @@
+[
+  {
+    "descricaoItem": "Serviços de manutenção predial preventiva e corretiva, elétrica e hidráulica",
+    "objetoCompra": "CONTRATAÇÃO DE EMPRESA PARA MANUTENÇÃO PREDIAL DAS UNIDADES ESCOLARES",
+    "unidadeMedida": "servico",
+    "ramoEsperado": "manutencao-predial",
+    "origem": "seed",
+    "origemAmostra": "dirigida"
+  },
+  {
+    "descricaoItem": "Serviço de pintura e reparo de alvenaria em posto de saúde",
+    "objetoCompra": "CONTRATAÇÃO DE SERVIÇO DE PINTURA PREDIAL",
+    "unidadeMedida": "metro",
+    "ramoEsperado": "manutencao-predial",
+    "origem": "seed",
+    "origemAmostra": "aleatoria"
+  },
+  {
+    "descricaoItem": "Troca de lâmpadas e reparos elétricos em geral",
+    "objetoCompra": "CONTRATAÇÃO DE SERVIÇOS DE MANUTENÇÃO ELÉTRICA",
+    "unidadeMedida": "servico",
+    "ramoEsperado": "manutencao-predial",
+    "origem": "seed",
+    "origemAmostra": "aleatoria"
+  },
+  {
+    "descricaoItem": "Contratação de empresa especializada para execução de projeto executivo de engenharia para reforma completa do prédio",
+    "objetoCompra": "ELABORAÇÃO DE PROJETO EXECUTIVO DE ENGENHARIA PARA REFORMA DO PRÉDIO DA ANTIGA RODOVIÁRIA",
+    "ramoEsperado": null,
+    "origem": "seed",
+    "origemAmostra": "dirigida",
+    "nota": "NEGATIVO DIFÍCIL — projeto de engenharia e reforma completa é outra escala"
+  },
+  {
+    "descricaoItem": "Execução de ondulação transversal tipo lombada em via pública",
+    "objetoCompra": "Contratação para execução de ondulação transversal (lombada)",
+    "ramoEsperado": null,
+    "origem": "seed",
+    "origemAmostra": "aleatoria",
+    "nota": "NEGATIVO — obra viária"
+  }
+]

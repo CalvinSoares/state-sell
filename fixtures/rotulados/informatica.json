@@ -1,0 +1,50 @@
+[
+  {
+    "descricaoItem": "Servidor tipo torre, 1 processador físico, 8 núcleos, 32GB memória",
+    "objetoCompra": "Aquisição de Material de Rede da casa dos técnicos do Centro de Biologia Marinha",
+    "unidadeMedida": "unidade",
+    "ramoEsperado": "informatica",
+    "origem": "seed",
+    "origemAmostra": "dirigida"
+  },
+  {
+    "descricaoItem": "Switch quantidade portas: 24, tipo portas: gigabit ethernet, velocidade 1000 mbps",
+    "objetoCompra": "Aquisição de Material de Rede",
+    "unidadeMedida": "unidade",
+    "ramoEsperado": "informatica",
+    "origem": "seed",
+    "origemAmostra": "dirigida"
+  },
+  {
+    "descricaoItem": "Estabilizador Tensão entrada 115/127/220, 6 tomadas de saída",
+    "objetoCompra": "Aquisição de equipamento de informática",
+    "unidadeMedida": "unidade",
+    "ramoEsperado": "informatica",
+    "origem": "seed",
+    "origemAmostra": "aleatoria"
+  },
+  {
+    "descricaoItem": "Teclado Microcomputador tipo multimídia, conector USB, sem fio",
+    "objetoCompra": "Aquisição de material de informática",
+    "unidadeMedida": "unidade",
+    "ramoEsperado": "informatica",
+    "origem": "seed",
+    "origemAmostra": "aleatoria"
+  },
+  {
+    "descricaoItem": "Serviço de impressão de banners e faixas em lona para campanha",
+    "objetoCompra": "CONTRATAÇÃO DE SERVIÇOS GRÁFICOS",
+    "ramoEsperado": "grafica",
+    "origem": "seed",
+    "origemAmostra": "dirigida",
+    "nota": "NEGATIVO PARA INFORMÁTICA — impressão é gráfica; positivo para grafica"
+  },
+  {
+    "descricaoItem": "Aquisição de impressora multifuncional laser com toner",
+    "objetoCompra": "AQUISIÇÃO DE IMPRESSORA MULTIFUNCIONAL",
+    "ramoEsperado": null,
+    "origem": "seed",
+    "origemAmostra": "dirigida",
+    "nota": "NEGATIVO DIFÍCIL — impressora é limite entre informática e gráfica; deixamos null (nenhum ramo deve reivindicar equipamento de impressão sozinho)"
+  }
+]

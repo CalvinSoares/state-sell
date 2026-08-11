@@ -1,0 +1,33 @@
+[
+  {
+    "descricaoItem": "Detector de radiação Geiger-Muller, monitor portátil digital com sonda pancake",
+    "objetoCompra": "Aquisição de detector de radiação para monitoração de área",
+    "ramoEsperado": null,
+    "origem": "seed",
+    "origemAmostra": "aleatoria",
+    "nota": "não é de nenhum ramo do catálogo"
+  },
+  {
+    "descricaoItem": "Contratação de treinamento de BIM para equipe técnica",
+    "objetoCompra": "CONTRATAÇÃO DE TREINAMENTO EM MODELAGEM BIM",
+    "ramoEsperado": null,
+    "origem": "seed",
+    "origemAmostra": "aleatoria"
+  },
+  {
+    "descricaoItem": "Envelope plástico polietileno cristal e lacre de segurança",
+    "objetoCompra": "Aquisição de materiais de consumo: capa processo, caixa arquivo",
+    "ramoEsperado": null,
+    "origem": "seed",
+    "origemAmostra": "aleatoria",
+    "nota": "material de escritório"
+  },
+  {
+    "descricaoItem": "Aquisição de gêneros alimentícios da agricultura familiar - banana nanica, mandioca descascada",
+    "objetoCompra": "AQUISIÇÃO DE GÊNEROS ALIMENTÍCIOS DA AGRICULTURA FAMILIAR PARA ALIMENTAÇÃO ESCOLAR",
+    "ramoEsperado": null,
+    "origem": "seed",
+    "origemAmostra": "dirigida",
+    "nota": "NEGATIVO DIFÍCIL para alimentacao — in natura / agricultura familiar, não é marmitaria"
+  }
+]
