@@ -1,4 +1,5 @@
 import { autorizarCron } from "@/src/server/cron/guard";
+import { casarJob } from "@/src/server/coleta/casar.job";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
@@ -7,5 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   const naoAutorizado = autorizarCron(req);
   if (naoAutorizado) return naoAutorizado;
-  return Response.json({ ok: true, etapa: "casar", pendente: "casarJob()" });
+
+  const resultado = await casarJob();
+  return Response.json({ ok: true, etapa: "casar", ...resultado });
 }

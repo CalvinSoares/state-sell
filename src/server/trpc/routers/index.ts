@@ -1,4 +1,5 @@
 import { router } from "../trpc";
+import { adminRouter } from "./admin.router";
 import { ramoRouter } from "./ramo.router";
 
 /**
@@ -7,6 +8,7 @@ import { ramoRouter } from "./ramo.router";
  */
 export const appRouter = router({
   ramo: ramoRouter,
+  admin: adminRouter,
 });
 
 export type AppRouter = typeof appRouter;
