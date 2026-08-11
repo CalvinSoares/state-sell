@@ -26,7 +26,7 @@ export default function LandingPage() {
         name: SITE.nome,
         url: urlDoSite(),
         description: SITE.descricao,
-        email: "avisos@prefeituraquer.com.br",
+        email: SITE.emailContato,
       },
       {
         "@type": "WebSite",
@@ -130,6 +130,11 @@ export default function LandingPage() {
             </a>
             .
           </p>
+          <p className="mt-2">
+            <a className="text-acento" href="/privacidade">
+              Privacidade
+            </a>
+          </p>
         </footer>
       </Container>
     </main>
@@ -139,7 +144,7 @@ export default function LandingPage() {
 /** O próprio e-mail é o argumento de venda — mostrado como um "recibo". */
 function ExemploEmail() {
   return (
-    <figure className="overflow-hidden rounded-[--radius-card] border border-borda bg-cartao shadow-[var(--sombra)]">
+    <figure className="overflow-hidden rounded-card border border-borda bg-cartao shadow-[var(--sombra)]">
       <div className="border-b border-borda bg-cartao px-5 py-3 text-sm text-suave">
         Um aviso de verdade fica assim:
       </div>
@@ -160,7 +165,7 @@ function ExemploEmail() {
 
 function Passo({ n, titulo, children }: { n: number; titulo: string; children: React.ReactNode }) {
   return (
-    <li className="rounded-[--radius-card] border border-borda bg-cartao p-5">
+    <li className="rounded-card border border-borda bg-cartao p-5">
       <span className="grid size-8 place-items-center rounded-full bg-acento-suave font-bold text-acento">
         {n}
       </span>

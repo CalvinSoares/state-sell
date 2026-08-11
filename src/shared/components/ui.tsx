@@ -23,7 +23,7 @@ export function Container({
 /** Cartão padrão (fundo, borda, raio). */
 export function Card({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cx("rounded-[--radius-card] border border-borda bg-cartao p-5", className)}>
+    <div className={cx("rounded-card border border-borda bg-cartao p-5", className)}>
       {children}
     </div>
   );
@@ -35,7 +35,7 @@ const BOTAO_BASE =
   "disabled:cursor-default disabled:opacity-60";
 
 const BOTAO_VARIANTE = {
-  primario: "bg-acento text-white hover:bg-acento-forte",
+  primario: "bg-acento text-sobre-acento hover:bg-acento-forte",
   neutro: "border border-borda bg-cartao text-tinta hover:border-acento",
   fantasma: "text-acento hover:bg-acento-suave",
 } as const;
@@ -122,10 +122,52 @@ export function Input({ className, ...props }: ComponentProps<"input">) {
     <input
       {...props}
       className={cx(
-        "w-full rounded-lg border border-borda bg-[--campo-bg] px-3.5 py-2.5 text-tinta",
+        "w-full rounded-lg border border-borda bg-campo px-3.5 py-2.5 text-tinta",
         "placeholder:text-suave focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento",
         className,
       )}
     />
+  );
+}
+
+export function Select({ className, ...props }: ComponentProps<"select">) {
+  return (
+    <select
+      {...props}
+      className={cx(
+        "rounded-lg border border-borda bg-campo px-3.5 py-2.5 text-tinta",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-acento",
+        className,
+      )}
+    />
+  );
+}
+
+/** Botão-chip selecionável (multiescolha ou seleção única). Tema-aware. */
+export function Chip({
+  children,
+  ativo,
+  pill = false,
+  className,
+  ...props
+}: {
+  ativo: boolean;
+  pill?: boolean;
+} & ComponentProps<"button">) {
+  return (
+    <button
+      type="button"
+      {...props}
+      className={cx(
+        "cursor-pointer text-left text-tinta transition-colors",
+        pill ? "whitespace-nowrap rounded-full px-3.5 py-2" : "rounded-[10px] p-3",
+        ativo
+          ? "border-2 border-acento bg-acento-suave"
+          : "border border-borda bg-cartao hover:border-acento",
+        className,
+      )}
+    >
+      {children}
+    </button>
   );
 }

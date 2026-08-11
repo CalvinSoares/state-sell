@@ -5,6 +5,7 @@
  */
 import type { EmailAlerta } from "./compor";
 import type { EmailResumo } from "./compor-resumo";
+import { urlAbsoluta } from "@/src/shared/config/site";
 
 const COR = {
   fundo: "#f4f2ec",
@@ -129,6 +130,7 @@ function casca(corpo: string, rodapeExtra = ""): string {
   <p style="max-width:600px;margin:14px auto 0;color:${COR.suave};font-size:12px;line-height:1.5;padding:0 12px">
     Prefeitura Quer é um serviço independente, sem vínculo com prefeituras ou órgãos públicos.
     A gente só lê os anúncios oficiais, que são públicos.
+    <a href="${escapar(urlAbsoluta("/privacidade"))}" style="color:${COR.suave}">Privacidade</a>
   </p>
 </td></tr></table>
 </body></html>`;

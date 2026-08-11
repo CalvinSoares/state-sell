@@ -1,51 +1,56 @@
 import { ultimasExecucoes } from "@/src/server/db/repositorios/admin.repo";
 import { AdminNav } from "@/src/shared/components/app/AdminNav";
+import { Container, cx } from "@/src/shared/components/ui";
 
 export const dynamic = "force-dynamic";
+
+const TH = "px-2 py-1.5 font-semibold";
+const TD = "px-2 py-1.5";
 
 /** Saúde da coleta. Sem isso, o produto pode morrer em silêncio. */
 export default async function JobsPage() {
   const execucoes = await ultimasExecucoes();
 
   return (
-    <main style={{ maxWidth: 820, margin: "2rem auto", padding: "0 1.25rem" }}>
-      <AdminNav atual="Jobs" />
-      <h1 style={{ fontSize: "1.4rem" }}>Jobs — coleta</h1>
-      {execucoes.length === 0 ? (
-        <p style={{ color: "var(--suave)" }}>Nenhuma execução ainda.</p>
-      ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "1rem", fontSize: ".9rem" }}>
-          <thead>
-            <tr style={{ textAlign: "left", color: "var(--suave)" }}>
-              <th style={th}>Início</th>
-              <th style={th}>UF/Mod.</th>
-              <th style={th}>Status</th>
-              <th style={th}>Novas</th>
-              <th style={th}>Atual.</th>
-              <th style={th}>Erros</th>
-            </tr>
-          </thead>
-          <tbody>
-            {execucoes.map((e) => (
-              <tr key={e.id} style={{ borderTop: "1px solid var(--borda)" }}>
-                <td style={td}>{e.iniciadaEm.toLocaleString("pt-BR")}</td>
-                <td style={td}>
-                  {e.uf}/{e.modalidadeId}
-                </td>
-                <td style={{ ...td, color: e.status === "ok" ? "var(--acento)" : "#b3261e" }}>
-                  {e.status}
-                </td>
-                <td style={td}>{e.novas}</td>
-                <td style={td}>{e.atualizadas}</td>
-                <td style={td}>{e.erros}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+    <main className="py-8">
+      <Container size="lg">
+        <AdminNav atual="Jobs" />
+        <h1 className="text-xl font-extrabold tracking-tight">Jobs — coleta</h1>
+        {execucoes.length === 0 ? (
+          <p className="mt-4 text-suave">Nenhuma execução ainda.</p>
+        ) : (
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead>
+                <tr className="text-left text-suave">
+                  <th className={TH}>Início</th>
+                  <th className={TH}>UF/Mod.</th>
+                  <th className={TH}>Status</th>
+                  <th className={TH}>Novas</th>
+                  <th className={TH}>Atual.</th>
+                  <th className={TH}>Erros</th>
+                </tr>
+              </thead>
+              <tbody>
+                {execucoes.map((e) => (
+                  <tr key={e.id} className="border-t border-borda">
+                    <td className={TD}>{e.iniciadaEm.toLocaleString("pt-BR")}</td>
+                    <td className={TD}>
+                      {e.uf}/{e.modalidadeId}
+                    </td>
+                    <td className={cx(TD, e.status === "ok" ? "text-acento" : "text-erro")}>
+                      {e.status}
+                    </td>
+                    <td className={TD}>{e.novas}</td>
+                    <td className={TD}>{e.atualizadas}</td>
+                    <td className={TD}>{e.erros}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Container>
     </main>
   );
 }
-
-const th: React.CSSProperties = { padding: ".4rem .5rem", fontWeight: 600 };
-const td: React.CSSProperties = { padding: ".4rem .5rem" };

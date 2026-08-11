@@ -1,6 +1,7 @@
 import { RAMOS } from "@/content/ramos";
 import { prazoTexto } from "@/src/shared/utils/data";
 import { linkDoEdital } from "@/src/server/alerta/compor";
+import { Card } from "@/src/shared/components/ui";
 
 const ROTULO = new Map(RAMOS.map((r) => [r.slug, r.rotulo]));
 
@@ -32,41 +33,44 @@ export function PainelView({ regiao, ramos, alertas, agora, contexto = "assinant
   const ehAdmin = contexto === "admin";
   return (
     <>
-      <section style={cartao}>
+      <Card className="mt-4">
         <strong>{ehAdmin ? "Perfil" : "Seu perfil"}</strong>
-        <p style={{ color: "var(--suave)", margin: ".4rem 0 0" }}>
+        <p className="mt-1.5 text-suave">
           Atende: {regiao} · Ramos: {ramos.map((s) => ROTULO.get(s) ?? s).join(", ") || "—"}
         </p>
-      </section>
+      </Card>
 
       {alertas.length === 0 ? (
-        <div style={{ ...cartao, textAlign: "center" }}>
-          <p style={{ fontWeight: 600, margin: 0 }}>Nenhum aviso ainda</p>
-          <p style={{ color: "var(--suave)", margin: ".35rem 0 0" }}>
+        <Card className="mt-4 text-center">
+          <p className="m-0 font-semibold">Nenhum aviso ainda</p>
+          <p className="mt-1.5 text-suave">
             {ehAdmin
               ? `Nada casou ainda para ${regiao}.`
               : `A gente está de olho nas compras de ${regiao}. Algumas semanas passam sem nada — no sábado mandamos um resumo mesmo assim.`}
           </p>
-        </div>
+        </Card>
       ) : (
-        <ul style={{ listStyle: "none", padding: 0, display: "grid", gap: ".75rem", marginTop: "1rem" }}>
+        <ul className="mt-4 grid list-none gap-3 p-0">
           {alertas.map((a) => (
-            <li key={a.alertaId} style={cartao}>
-              <strong>{ROTULO.get(a.ramoSlug) ?? a.ramoSlug}</strong>
-              <span style={{ color: "var(--suave)" }}> · {a.municipioNome}</span>
-              <p style={{ margin: ".35rem 0 0" }}>{a.itemDescricao.slice(0, 120)}</p>
-              {a.dataEncerramentoProposta ? (
-                <p style={{ margin: ".35rem 0 0", fontWeight: 600 }}>
-                  Prazo: {prazoTexto(a.dataEncerramentoProposta, agora)}
-                </p>
-              ) : null}
-              <a
-                href={linkDoEdital(a.linkSistemaOrigem, a.numeroControlePncp)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Ver o edital
-              </a>
+            <li key={a.alertaId}>
+              <Card>
+                <strong>{ROTULO.get(a.ramoSlug) ?? a.ramoSlug}</strong>
+                <span className="text-suave"> · {a.municipioNome}</span>
+                <p className="mt-1.5">{a.itemDescricao.slice(0, 120)}</p>
+                {a.dataEncerramentoProposta ? (
+                  <p className="mt-1.5 font-semibold">
+                    Prazo: {prazoTexto(a.dataEncerramentoProposta, agora)}
+                  </p>
+                ) : null}
+                <a
+                  className="mt-2 inline-block text-acento"
+                  href={linkDoEdital(a.linkSistemaOrigem, a.numeroControlePncp)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Ver o edital
+                </a>
+              </Card>
             </li>
           ))}
         </ul>
@@ -74,11 +78,3 @@ export function PainelView({ regiao, ramos, alertas, agora, contexto = "assinant
     </>
   );
 }
-
-const cartao: React.CSSProperties = {
-  background: "var(--cartao)",
-  border: "1px solid var(--borda)",
-  borderRadius: 12,
-  padding: "1rem 1.15rem",
-  marginTop: "1rem",
-};

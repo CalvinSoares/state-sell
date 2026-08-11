@@ -11,23 +11,14 @@ type Props = {
 /** Navegação do backoffice: "voltar" para a Bancada (e um nível intermediário). */
 export function AdminNav({ atual, paiHref, paiRotulo }: Props) {
   return (
-    <nav
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: ".4rem",
-        fontSize: ".9rem",
-        color: "var(--suave)",
-        marginBottom: "1.25rem",
-      }}
-    >
-      <Link href="/admin" style={{ color: "var(--acento)", textDecoration: "none" }}>
+    <nav className="mb-5 flex items-center gap-1.5 text-sm text-suave">
+      <Link href="/admin" className="text-acento no-underline">
         ← Bancada
       </Link>
       {paiHref && paiRotulo ? (
         <>
           <span>/</span>
-          <Link href={paiHref} style={{ color: "var(--acento)", textDecoration: "none" }}>
+          <Link href={paiHref} className="text-acento no-underline">
             {paiRotulo}
           </Link>
         </>

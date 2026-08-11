@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { RAMOS } from "@/content/ramos";
 import { FAIXAS_TETO } from "@/src/shared/config/faixas-teto";
 import { UFS } from "@/src/shared/config/ufs";
+import { Container } from "@/src/shared/components/ui";
 import { FormularioCadastro } from "./_components/FormularioCadastro";
 
 export const metadata: Metadata = {
@@ -26,14 +27,18 @@ export default function CadastroPage() {
   const faixas = FAIXAS_TETO.map((f) => ({ valor: f.valor, rotulo: f.rotulo }));
 
   return (
-    <main style={{ maxWidth: 600, margin: "3rem auto", padding: "0 1.25rem" }}>
-      <p style={{ color: "var(--acento)", fontWeight: 600, margin: 0 }}>Prefeitura Quer</p>
-      <h1 style={{ fontSize: "1.8rem", marginTop: ".25rem" }}>Dois minutos e a gente começa a olhar por você</h1>
-      <p style={{ color: "var(--suave)", marginBottom: "2.5rem" }}>
-        Três perguntas. Sem jargão. A promessa é: você vai saber quando a prefeitura quiser comprar o
-        que você vende.
-      </p>
-      <FormularioCadastro ramos={ramos} faixas={faixas} ufs={[...UFS]} />
+    <main className="py-12">
+      <Container size="md">
+        <p className="text-sm font-extrabold uppercase tracking-wide text-acento">Prefeitura Quer</p>
+        <h1 className="mt-1 text-3xl font-extrabold tracking-tight">
+          Dois minutos e a gente começa a olhar por você
+        </h1>
+        <p className="mb-10 mt-2 text-suave">
+          Três perguntas. Sem jargão. A promessa é: você vai saber quando a prefeitura quiser comprar
+          o que você vende.
+        </p>
+        <FormularioCadastro ramos={ramos} faixas={faixas} ufs={[...UFS]} />
+      </Container>
     </main>
   );
 }

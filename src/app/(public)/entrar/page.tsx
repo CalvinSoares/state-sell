@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { Container } from "@/src/shared/components/ui";
 import { EntrarForm } from "./_components/EntrarForm";
 
 export const metadata: Metadata = {
@@ -15,15 +17,28 @@ export const metadata: Metadata = {
 /** Login do assinante por magic link. Público. */
 export default function EntrarPage() {
   return (
-    <main style={{ maxWidth: 440, margin: "5rem auto", padding: "0 1.25rem" }}>
-      <h1 style={{ fontSize: "1.5rem" }}>Entrar</h1>
-      <p style={{ color: "var(--suave)" }}>
-        Digite seu e-mail e a gente manda um link de acesso. Sem senha.
-      </p>
-      <EntrarForm />
-      <p style={{ color: "var(--suave)", fontSize: ".9rem", marginTop: "1.5rem" }}>
-        Ainda não tem cadastro? <a href="/cadastro">Comece aqui</a>.
-      </p>
+    <main className="py-20">
+      <Container size="sm">
+        <h1 className="text-2xl font-extrabold tracking-tight">Entrar</h1>
+        <p className="mt-2 text-suave">
+          Digite seu e-mail e a gente manda um link de acesso. Sem senha.
+        </p>
+        <div className="mt-6">
+          <EntrarForm />
+        </div>
+        <p className="mt-6 text-sm text-suave">
+          Ainda não tem cadastro?{" "}
+          <Link className="text-acento" href="/cadastro">
+            Comece aqui
+          </Link>
+          .
+        </p>
+        <p className="mt-3 text-sm text-suave">
+          <Link className="text-acento" href="/privacidade">
+            Privacidade
+          </Link>
+        </p>
+      </Container>
     </main>
   );
 }

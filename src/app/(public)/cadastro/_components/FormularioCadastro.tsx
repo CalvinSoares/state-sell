@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button, Card, Chip, Input, Select } from "@/src/shared/components/ui";
 import { useCadastro, useMunicipios, usePrevia } from "../hook/cadastro.hook";
 
 type RamoOpcao = { slug: string; rotulo: string; ajuda: string };
@@ -32,13 +33,13 @@ export function FormularioCadastro({ ramos, faixas, ufs }: Props) {
 
   if (c.enviado) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        <Cartao>
-          <h2 style={{ marginTop: 0 }}>Falta um passo</h2>
-          <p style={{ color: "var(--suave)", margin: 0 }}>
+      <div className="flex flex-col gap-6">
+        <Card>
+          <h2 className="mt-0 text-xl font-bold">Falta um passo</h2>
+          <p className="m-0 text-suave">
             Enviamos um link para o seu e-mail. Abra e confirme para começar a receber os avisos.
           </p>
-        </Cartao>
+        </Card>
 
         <PreviaOportunidades previa={previa} carregando={carregandoPrevia} />
       </div>
@@ -72,63 +73,60 @@ export function FormularioCadastro({ ramos, faixas, ufs }: Props) {
           teto: teto as never,
         });
       }}
-      style={{ display: "flex", flexDirection: "column", gap: "2rem" }}
+      className="flex flex-col gap-8"
     >
       <Pergunta numero={1} titulo="Onde você atende?" ajuda="Sua cidade, ou o estado inteiro.">
-        <div style={{ display: "flex", gap: ".5rem", marginBottom: ".75rem", flexWrap: "wrap" }}>
-          <select value={uf} onChange={(e) => trocarUf(e.target.value)} style={{ ...campo, width: "auto" }}>
+        <div className="mb-3 flex flex-wrap gap-2">
+          <Select value={uf} onChange={(e) => trocarUf(e.target.value)}>
             {ufs.map((u) => (
               <option key={u} value={u}>
                 {u}
               </option>
             ))}
-          </select>
-          <Selecionavel ativo={abrangencia === "cidade"} onClick={() => setAbrangencia("cidade")} pill>
+          </Select>
+          <Chip ativo={abrangencia === "cidade"} onClick={() => setAbrangencia("cidade")} pill>
             Só a minha cidade
-          </Selecionavel>
-          <Selecionavel ativo={abrangencia === "estado"} onClick={() => setAbrangencia("estado")} pill>
+          </Chip>
+          <Chip ativo={abrangencia === "estado"} onClick={() => setAbrangencia("estado")} pill>
             O estado inteiro
-          </Selecionavel>
+          </Chip>
         </div>
 
         {abrangencia === "cidade" ? (
           cidade ? (
-            <div style={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-              <span style={{ fontWeight: 600 }}>{cidade.nome}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold">{cidade.nome}</span>
               <button
                 type="button"
                 onClick={() => {
                   setCidade(null);
                   setCidadeTermo("");
                 }}
-                style={{ border: 0, background: "none", color: "var(--acento)", cursor: "pointer" }}
+                className="cursor-pointer border-0 bg-transparent text-acento"
               >
                 trocar
               </button>
             </div>
           ) : (
-            <div style={{ position: "relative" }}>
-              <input
+            <div className="relative">
+              <Input
                 type="text"
                 placeholder="digite o nome da sua cidade"
                 value={cidadeTermo}
                 onChange={(e) => setCidadeTermo(e.target.value)}
-                style={campo}
                 autoComplete="off"
               />
               {buscando ? (
-                <p style={{ color: "var(--suave)", fontSize: ".85rem", margin: ".4rem 0 0" }}>
-                  buscando cidades…
-                </p>
+                <p className="mt-1.5 text-sm text-suave">buscando cidades…</p>
               ) : null}
               {sugestoes.length > 0 ? (
-                <ul style={listaSugestoes}>
+                <ul className="absolute z-10 mt-1 max-h-56 w-full list-none overflow-y-auto rounded-lg border border-borda bg-cartao p-1 shadow-[var(--sombra)]">
                   {sugestoes.map((s) => (
                     <li key={s.codigoIbge}>
                       <button
                         type="button"
                         onClick={() => setCidade({ codigoIbge: s.codigoIbge, nome: s.nome })}
-                        style={itemSugestao}
+                        className="block w-full cursor-pointer rounded-md border-0 bg-transparent px-2.5 py-2 text-left text-tinta hover:bg-acento-suave"
                       >
                         {s.nome}
                       </button>
@@ -146,14 +144,12 @@ export function FormularioCadastro({ ramos, faixas, ufs }: Props) {
         titulo="O que você vende?"
         ajuda="Escolha o que mais parece com o que você faz. Pode marcar mais de um."
       >
-        <div style={{ display: "grid", gap: ".6rem", gridTemplateColumns: "1fr 1fr" }}>
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           {ramos.map((r) => (
-            <Selecionavel key={r.slug} ativo={ramosSel.includes(r.slug)} onClick={() => alternarRamo(r.slug)}>
-              <strong style={{ display: "block" }}>{r.rotulo}</strong>
-              <span style={{ display: "block", color: "var(--suave)", fontSize: ".85rem", marginTop: ".15rem" }}>
-                {r.ajuda}
-              </span>
-            </Selecionavel>
+            <Chip key={r.slug} ativo={ramosSel.includes(r.slug)} onClick={() => alternarRamo(r.slug)}>
+              <strong className="block">{r.rotulo}</strong>
+              <span className="mt-0.5 block text-sm text-suave">{r.ajuda}</span>
+            </Chip>
           ))}
         </div>
       </Pergunta>
@@ -163,28 +159,35 @@ export function FormularioCadastro({ ramos, faixas, ufs }: Props) {
         titulo="Qual o maior pedido que você dá conta?"
         ajuda="Serve para não te avisar de coisa grande demais. Ganhar o que você não consegue cumprir dá multa e pode te impedir de participar das próximas."
       >
-        <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem" }}>
+        <div className="flex flex-wrap gap-2">
           {faixas.map((f) => (
-            <Selecionavel key={f.valor} ativo={teto === f.valor} onClick={() => setTeto(f.valor)} pill>
+            <Chip key={f.valor} ativo={teto === f.valor} onClick={() => setTeto(f.valor)} pill>
               {f.rotulo}
-            </Selecionavel>
+            </Chip>
           ))}
         </div>
       </Pergunta>
 
       <div>
-        <input
+        <Input
           type="email"
           required
           placeholder="seu e-mail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={{ ...campo, marginBottom: ".75rem" }}
+          className="mb-3"
         />
-        <button type="submit" disabled={!podeEnviar} style={botao(podeEnviar)}>
+        <Button type="submit" tamanho="lg" className="w-full" disabled={!podeEnviar}>
           {c.isPending ? "Enviando…" : "Quero ser avisado"}
-        </button>
-        {c.erro ? <p style={{ color: "var(--erro)", marginTop: ".5rem" }}>{c.erro}</p> : null}
+        </Button>
+        <p className="mt-3 text-center text-sm text-suave">
+          Ao continuar, você concorda com a{" "}
+          <a className="text-acento" href="/privacidade">
+            política de privacidade
+          </a>
+          .
+        </p>
+        {c.erro ? <p className="mt-2 text-erro">{c.erro}</p> : null}
       </div>
     </form>
   );
@@ -210,46 +213,44 @@ function PreviaOportunidades({
   carregando: boolean;
 }) {
   if (carregando) {
-    return (
-      <p style={{ color: "var(--suave)" }}>Procurando o que já está aberto para você agora…</p>
-    );
+    return <p className="text-suave">Procurando o que já está aberto para você agora…</p>;
   }
   if (!previa || previa.itens.length === 0) {
     return (
-      <Cartao>
+      <Card>
         <strong>Nada aberto exatamente pra você neste momento.</strong>
-        <p style={{ color: "var(--suave)", margin: ".4rem 0 0" }}>
-          É normal — as compras aparecem o tempo todo. Assim que surgir algo que serve, você recebe
-          o e-mail. No sábado a gente manda um resumo de qualquer jeito.
+        <p className="mt-1.5 text-suave">
+          É normal — as compras aparecem o tempo todo. Assim que surgir algo que serve, você recebe o
+          e-mail. No sábado a gente manda um resumo de qualquer jeito.
         </p>
-      </Cartao>
+      </Card>
     );
   }
   return (
     <div>
-      <h2 style={{ fontSize: "1.15rem", margin: "0 0 .25rem" }}>
-        Olha o que <span style={{ color: "var(--acento)" }}>já está aberto</span> pra você agora
+      <h2 className="mb-1 text-lg font-bold">
+        Olha o que <span className="text-acento">já está aberto</span> pra você agora
       </h2>
-      <p style={{ color: "var(--suave)", margin: "0 0 1rem", fontSize: ".9rem" }}>
+      <p className="mb-4 text-sm text-suave">
         Isso é o tipo de aviso que vai chegar no seu e-mail. Acontece todo dia.
       </p>
-      <div style={{ display: "grid", gap: ".75rem" }}>
+      <div className="grid gap-3">
         {previa.itens.map((o, i) => (
-          <div key={i} style={{ ...cartaoBase, borderLeft: "3px solid var(--acento)" }}>
+          <Card key={i} className="border-l-4 border-l-acento">
             <strong>{o.titulo}.</strong>
-            <p style={{ margin: ".35rem 0 0", color: "var(--suave)" }}>{o.item}</p>
-            {o.valor ? <p style={{ margin: ".15rem 0 0", color: "var(--suave)" }}>{o.valor}.</p> : null}
+            <p className="mt-1.5 text-suave">{o.item}</p>
+            {o.valor ? <p className="mt-0.5 text-suave">{o.valor}.</p> : null}
             {o.exclusivo ? (
-              <p style={{ margin: ".15rem 0 0", color: "var(--acento)", fontWeight: 600 }}>
+              <p className="mt-0.5 font-semibold text-acento">
                 Exclusivo para micro e pequena empresa.
               </p>
             ) : null}
-            {o.prazo ? <p style={{ margin: ".35rem 0 0", fontWeight: 600 }}>Prazo: {o.prazo}.</p> : null}
-          </div>
+            {o.prazo ? <p className="mt-1.5 font-semibold">Prazo: {o.prazo}.</p> : null}
+          </Card>
         ))}
       </div>
       {previa.total > previa.itens.length ? (
-        <p style={{ color: "var(--suave)", marginTop: ".75rem", fontSize: ".9rem" }}>
+        <p className="mt-3 text-sm text-suave">
           E mais {previa.total - previa.itens.length} abertas agora. Confirme seu e-mail para receber
           na hora certa.
         </p>
@@ -271,106 +272,11 @@ function Pergunta({
 }) {
   return (
     <section>
-      <h2 style={{ fontSize: "1.1rem", margin: "0 0 .25rem" }}>
-        <span style={{ color: "var(--acento)" }}>{numero}.</span> {titulo}
+      <h2 className="mb-1 text-lg font-bold">
+        <span className="text-acento">{numero}.</span> {titulo}
       </h2>
-      <p style={{ color: "var(--suave)", margin: "0 0 .75rem", fontSize: ".9rem" }}>{ajuda}</p>
+      <p className="mb-3 text-sm text-suave">{ajuda}</p>
       {children}
     </section>
   );
-}
-
-/** Botão selecionável (chip ou card). Tema-aware. */
-function Selecionavel({
-  children,
-  ativo,
-  onClick,
-  pill = false,
-}: {
-  children: React.ReactNode;
-  ativo: boolean;
-  onClick: () => void;
-  pill?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      style={{
-        textAlign: "left",
-        padding: pill ? ".55rem .9rem" : ".8rem",
-        borderRadius: pill ? 999 : 10,
-        cursor: "pointer",
-        border: ativo ? "2px solid var(--acento)" : "1px solid var(--borda)",
-        background: ativo ? "var(--acento-suave)" : "var(--cartao)",
-        color: "var(--tinta)",
-        whiteSpace: pill ? "nowrap" : "normal",
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
-function Cartao({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ border: "1px solid var(--borda)", borderRadius: 12, padding: "1.5rem", background: "var(--cartao)" }}>
-      {children}
-    </div>
-  );
-}
-
-const cartaoBase: React.CSSProperties = {
-  background: "var(--cartao)",
-  border: "1px solid var(--borda)",
-  borderRadius: 12,
-  padding: "1rem 1.15rem",
-};
-
-const campo: React.CSSProperties = {
-  width: "100%",
-  padding: ".7rem",
-  borderRadius: 8,
-};
-
-const listaSugestoes: React.CSSProperties = {
-  listStyle: "none",
-  margin: ".25rem 0 0",
-  padding: ".25rem",
-  border: "1px solid var(--borda)",
-  borderRadius: 8,
-  background: "var(--cartao)",
-  position: "absolute",
-  width: "100%",
-  zIndex: 10,
-  maxHeight: 220,
-  overflowY: "auto",
-  boxShadow: "var(--sombra)",
-};
-
-const itemSugestao: React.CSSProperties = {
-  display: "block",
-  width: "100%",
-  textAlign: "left",
-  padding: ".5rem .6rem",
-  border: 0,
-  background: "none",
-  color: "var(--tinta)",
-  cursor: "pointer",
-  borderRadius: 6,
-  fontSize: ".95rem",
-};
-
-function botao(ativo: boolean): React.CSSProperties {
-  return {
-    width: "100%",
-    padding: ".8rem",
-    borderRadius: 10,
-    border: 0,
-    background: ativo ? "var(--acento)" : "var(--desabilitado-bg)",
-    color: ativo ? "#fff" : "var(--desabilitado-tinta)",
-    fontWeight: 600,
-    fontSize: "1rem",
-    cursor: ativo ? "pointer" : "default",
-  };
 }

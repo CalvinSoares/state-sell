@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { adminAtual } from "@/src/server/auth/admin";
+import { Container } from "@/src/shared/components/ui";
 
 const CARTOES = [
   { href: "/admin/rotular", titulo: "Rotular itens", desc: "A régua do casamento. Atalhos de teclado." },
@@ -10,28 +11,23 @@ const CARTOES = [
 export default async function AdminHome() {
   const email = await adminAtual();
   return (
-    <main style={{ maxWidth: 720, margin: "3rem auto", padding: "0 1.25rem" }}>
-      <p style={{ color: "var(--suave)", margin: 0 }}>Backoffice · {email}</p>
-      <h1 style={{ fontSize: "1.6rem", marginTop: ".25rem" }}>Bancada</h1>
-      <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "1fr 1fr", marginTop: "1.5rem" }}>
-        {CARTOES.map((c) => (
-          <Link
-            key={c.href}
-            href={c.href}
-            style={{
-              border: "1px solid var(--borda)",
-              borderRadius: 12,
-              padding: "1.1rem",
-              textDecoration: "none",
-              color: "var(--tinta)",
-              background: "var(--cartao)",
-            }}
-          >
-            <strong>{c.titulo}</strong>
-            <p style={{ color: "var(--suave)", margin: ".35rem 0 0", fontSize: ".9rem" }}>{c.desc}</p>
-          </Link>
-        ))}
-      </div>
+    <main className="py-12">
+      <Container size="md">
+        <p className="m-0 text-suave">Backoffice · {email}</p>
+        <h1 className="mt-1 text-2xl font-extrabold tracking-tight">Bancada</h1>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          {CARTOES.map((c) => (
+            <Link
+              key={c.href}
+              href={c.href}
+              className="rounded-card border border-borda bg-cartao p-5 text-tinta no-underline transition-colors hover:border-acento"
+            >
+              <strong>{c.titulo}</strong>
+              <p className="mt-1.5 text-sm text-suave">{c.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </Container>
     </main>
   );
 }

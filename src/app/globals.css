@@ -12,6 +12,8 @@
   --color-acento-suave: var(--acento-suave);
   --color-borda: var(--borda);
   --color-erro: var(--erro);
+  --color-campo: var(--campo-bg);
+  --color-sobre-acento: var(--sobre-acento);
   --radius-card: 14px;
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -25,6 +27,7 @@
   --acento: #1f6f43;
   --acento-forte: #185737;
   --acento-suave: #eaf4ee;
+  --sobre-acento: #ffffff;
   --borda: #e2ded4;
   --campo-bg: #ffffff;
   --desabilitado-bg: #d8d5cd;
@@ -42,6 +45,7 @@
     --acento: #4bbf7e;
     --acento-forte: #63d090;
     --acento-suave: #17291e;
+    --sobre-acento: #14130f;
     --borda: #34312a;
     --campo-bg: #26241e;
     --desabilitado-bg: #34312a;
@@ -60,6 +64,7 @@
   --acento: #4bbf7e;
   --acento-forte: #63d090;
   --acento-suave: #17291e;
+  --sobre-acento: #14130f;
   --borda: #34312a;
   --campo-bg: #26241e;
   --desabilitado-bg: #34312a;

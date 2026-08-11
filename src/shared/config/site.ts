@@ -12,6 +12,10 @@ export const SITE = {
     "A gente avisa quando a prefeitura da sua cidade quer comprar exatamente o que você vende. Você vai saber; disputar é com você.",
   locale: "pt_BR",
   idioma: "pt-BR",
+  /** Contato para pedidos LGPD (acesso, correção, exclusão). */
+  emailContato: "avisos@prefeituraquer.com.br",
+  /** Data da última revisão da política de privacidade (DD/MM/AAAA). */
+  privacidadeAtualizadaEm: "11/08/2026",
 } as const;
 
 /** URL canônica do app, sem barra no final. */

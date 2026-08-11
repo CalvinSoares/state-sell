@@ -24,5 +24,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.4,
     },
+    {
+      url: urlAbsoluta("/privacidade"),
+      lastModified: agora,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
   ];
 }
