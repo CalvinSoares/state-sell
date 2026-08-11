@@ -1,9 +1,23 @@
 :root {
   --fundo: #fbfaf7;
+  --cartao: #ffffff;
   --tinta: #1b1a17;
   --suave: #6b6a63;
   --acento: #1f6f43;
+  --acento-suave: #eef6f0;
   --borda: #e7e4dc;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fundo: #14130f;
+    --cartao: #1c1b17;
+    --tinta: #f2f0ea;
+    --suave: #a7a49a;
+    --acento: #4bbf7e;
+    --acento-suave: #16281d;
+    --borda: #2c2a24;
+  }
 }
 
 * {

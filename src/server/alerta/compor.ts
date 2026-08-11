@@ -43,7 +43,7 @@ const PREFIXO_MUNICIPAL = /^(MUNICIPIO DE|PREFEITURA MUNICIPAL DE|PREFEITURA DE)
  * de fato municipal — secretaria estadual, universidade e autarquia mantêm o
  * próprio nome (o e-mail mentiria dizendo "A Prefeitura de Universidade...").
  */
-function orgaoHumano(orgao: string, municipio: string): string {
+export function orgaoHumano(orgao: string, municipio: string): string {
   if (PREFIXO_MUNICIPAL.test(orgao)) {
     const cidade = orgao.replace(PREFIXO_MUNICIPAL, "").trim() || municipio;
     return `A Prefeitura de ${tituloCaso(cidade)}`;
@@ -51,7 +51,7 @@ function orgaoHumano(orgao: string, municipio: string): string {
   return tituloCaso(orgao);
 }
 
-function tituloCaso(s: string): string {
+export function tituloCaso(s: string): string {
   return s
     .toLowerCase()
     .split(/\s+/)
@@ -111,7 +111,7 @@ export function comporEmail(
   };
 }
 
-function ramoRotuloCurto(rotulo: string): string {
+export function ramoRotuloCurto(rotulo: string): string {
   // "Alimentação / marmitaria" → "alimentação"
   return (rotulo.split("/")[0] ?? rotulo).trim().toLowerCase();
 }

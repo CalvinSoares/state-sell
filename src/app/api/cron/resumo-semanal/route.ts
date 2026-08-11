@@ -1,4 +1,5 @@
 import { autorizarCron } from "@/src/server/cron/guard";
+import { resumoSemanalJob } from "@/src/server/alerta/resumo-semanal.job";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
@@ -7,5 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   const naoAutorizado = autorizarCron(req);
   if (naoAutorizado) return naoAutorizado;
-  return Response.json({ ok: true, etapa: "resumo-semanal", pendente: "resumoSemanalJob()" });
+
+  const resultado = await resumoSemanalJob();
+  return Response.json({ ok: true, etapa: "resumo-semanal", ...resultado });
 }

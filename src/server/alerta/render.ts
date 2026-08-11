@@ -3,6 +3,7 @@
  * no celular. Ver alertas-e-envio.md.
  */
 import type { EmailAlerta } from "./compor";
+import type { EmailResumo } from "./compor-resumo";
 
 export function renderTexto(e: EmailAlerta): string {
   const partes = [
@@ -38,6 +39,30 @@ export function renderHtml(e: EmailAlerta): string {
     </p>
     <hr style="border:0;border-top:1px solid #e7e4dc;margin:1.5rem 0" />
     <p style="color:#6b6a63;font-size:.85rem">${escapar(e.porque)}</p>
+  </body></html>`;
+}
+
+export function renderResumoTexto(e: EmailResumo): string {
+  const partes = [
+    e.titulo,
+    "",
+    ...e.linhas,
+    ...(e.temAberturas ? ["", "Ainda dá tempo:", ...e.aberturas.map((a) => `· ${a}`)] : []),
+  ];
+  return partes.join("\n");
+}
+
+export function renderResumoHtml(e: EmailResumo): string {
+  const linhas = e.linhas.map((l) => `<p style="margin:.35rem 0">${escapar(l)}</p>`).join("");
+  const aberturas = e.temAberturas
+    ? `<p style="margin:1rem 0 .3rem;font-weight:600">Ainda dá tempo:</p><ul style="margin:0;padding-left:1.1rem">${e.aberturas
+        .map((a) => `<li style="margin:.2rem 0">${escapar(a)}</li>`)
+        .join("")}</ul>`
+    : "";
+  return `<!doctype html><html lang="pt-BR"><body style="font-family:system-ui,Arial,sans-serif;color:#1b1a17;max-width:520px;margin:0 auto;padding:1.5rem;line-height:1.5">
+    <h1 style="font-size:1.25rem;margin:0 0 1rem">${escapar(e.titulo)}</h1>
+    ${linhas}
+    ${aberturas}
   </body></html>`;
 }
 

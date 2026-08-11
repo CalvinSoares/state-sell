@@ -2,9 +2,9 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "state-sell-prod",
+      "name": "state-sell-dev",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["start", "--port", "3100"],
+      "runtimeArgs": ["dev", "--port", "3100"],
       "port": 3100
     }
   ]
