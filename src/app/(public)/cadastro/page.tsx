@@ -1,7 +1,21 @@
+import type { Metadata } from "next";
 import { RAMOS } from "@/content/ramos";
 import { FAIXAS_TETO } from "@/src/shared/config/faixas-teto";
 import { UFS } from "@/src/shared/config/ufs";
 import { FormularioCadastro } from "./_components/FormularioCadastro";
+
+export const metadata: Metadata = {
+  title: "Começar a ser avisado",
+  description:
+    "Em dois minutos você diz o que vende e onde. A gente passa a olhar as compras das prefeituras por você.",
+  alternates: { canonical: "/cadastro" },
+  openGraph: {
+    title: "Começar a ser avisado",
+    description:
+      "Em dois minutos você diz o que vende e onde. A gente passa a olhar as compras das prefeituras por você.",
+    url: "/cadastro",
+  },
+};
 
 /**
  * Composição — sem lógica. Passa os dados estáticos (ramos, faixas, UFs) já

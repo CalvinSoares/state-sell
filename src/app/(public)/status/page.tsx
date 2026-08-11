@@ -1,7 +1,14 @@
+import type { Metadata } from "next";
 import { statusColeta } from "@/src/server/db/repositorios/status.repo";
 import { horasRestantes } from "@/src/shared/utils/data";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Status do serviço",
+  description: "Prova de vida da coleta — se o serviço está lendo os anúncios normalmente.",
+  robots: { index: false, follow: false },
+};
 
 const LIMITE_ALARME_H = 36;
 

@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Cadastro concluído",
+  robots: { index: false, follow: false },
+};
+
 /** Confirmação pós-cadastro. Calibra a expectativa: a promessa é saber, não faturar. */
 export default function ProntoPage() {
   return (

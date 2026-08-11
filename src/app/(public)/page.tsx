@@ -1,10 +1,64 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { RAMOS } from "@/content/ramos";
+import { SITE, urlAbsoluta, urlDoSite } from "@/src/shared/config/site";
+
+export const metadata: Metadata = {
+  title: { absolute: SITE.tituloPadrao },
+  description: SITE.descricao,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: SITE.tituloPadrao,
+    description: SITE.descricao,
+    url: "/",
+    type: "website",
+  },
+};
 
 /** Landing. A promessa é saber, não faturar. Zero jargão. Ver contexto-produto.md. */
 export default function LandingPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${urlDoSite()}/#organizacao`,
+        name: SITE.nome,
+        url: urlDoSite(),
+        description: SITE.descricao,
+        email: "avisos@prefeituraquer.com.br",
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${urlDoSite()}/#site`,
+        name: SITE.nome,
+        url: urlDoSite(),
+        description: SITE.descricao,
+        inLanguage: SITE.idioma,
+        publisher: { "@id": `${urlDoSite()}/#organizacao` },
+      },
+      {
+        "@type": "SoftwareApplication",
+        name: SITE.nome,
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        url: urlAbsoluta("/"),
+        description: SITE.descricao,
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "BRL",
+        },
+      },
+    ],
+  };
+
   return (
     <main style={{ maxWidth: 720, margin: "0 auto", padding: "3.5rem 1.25rem 5rem" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <p style={{ color: "var(--acento)", fontWeight: 700, margin: 0, letterSpacing: ".02em" }}>
         Prefeitura Quer
       </p>

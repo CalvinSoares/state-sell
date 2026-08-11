@@ -1,4 +1,16 @@
+import type { Metadata } from "next";
 import { EntrarForm } from "./_components/EntrarForm";
+
+export const metadata: Metadata = {
+  title: "Entrar",
+  description: "Acesse sua conta com um link enviado por e-mail. Sem senha.",
+  alternates: { canonical: "/entrar" },
+  openGraph: {
+    title: "Entrar",
+    description: "Acesse sua conta com um link enviado por e-mail. Sem senha.",
+    url: "/entrar",
+  },
+};
 
 /** Login do assinante por magic link. Público. */
 export default function EntrarPage() {
