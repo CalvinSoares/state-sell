@@ -1,3 +1,22 @@
+@import "tailwindcss";
+
+/* Ponte tokens → Tailwind: bg-fundo, text-tinta, border-borda… reagem ao tema.
+   SEM `inline`: mantém a indireção var() viva, senão o build congela o valor. */
+@theme {
+  --color-fundo: var(--fundo);
+  --color-cartao: var(--cartao);
+  --color-tinta: var(--tinta);
+  --color-suave: var(--suave);
+  --color-acento: var(--acento);
+  --color-acento-forte: var(--acento-forte);
+  --color-acento-suave: var(--acento-suave);
+  --color-borda: var(--borda);
+  --color-erro: var(--erro);
+  --radius-card: 14px;
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
 :root {
   --fundo: #fbfaf7;
   --cartao: #ffffff;
@@ -49,51 +68,35 @@
   --sombra: 0 6px 22px rgba(0, 0, 0, 0.45);
 }
 
-* {
-  box-sizing: border-box;
-}
+/* Base em @layer base: precedência MENOR que os utilitários do Tailwind
+   (senão `a{color}` venceria `text-white` num botão-link → texto invisível). */
+@layer base {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: var(--fundo);
+    color: var(--tinta);
+    line-height: 1.55;
+  }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--fundo);
-  color: var(--tinta);
-  font-family:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.55;
-}
+  a {
+    color: var(--acento);
+  }
 
-a {
-  color: var(--acento);
-}
+  /* Controles de formulário nativos (o componente Input usa Tailwind). */
+  select,
+  textarea {
+    background: var(--campo-bg);
+    color: var(--tinta);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+  }
 
-/* Controles de formulário — tema-aware por padrão. */
-input,
-select,
-textarea {
-  background: var(--campo-bg);
-  color: var(--tinta);
-  border: 1px solid var(--borda);
-  border-radius: 8px;
-  font-size: 1rem;
-  font-family: inherit;
-}
-
-input::placeholder,
-textarea::placeholder {
-  color: var(--suave);
-}
-
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-button:focus-visible {
-  outline: 2px solid var(--acento);
-  outline-offset: 1px;
-}
-
-select option {
-  background: var(--cartao);
-  color: var(--tinta);
+  select option {
+    background: var(--cartao);
+    color: var(--tinta);
+  }
 }
