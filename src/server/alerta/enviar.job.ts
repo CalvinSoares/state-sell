@@ -12,11 +12,18 @@ import { comporEmail } from "./compor";
 import { enviarEmailAlerta } from "./enviar.action";
 
 const VALIDADE_FEEDBACK_MS = 90 * 24 * 60 * 60 * 1000; // 90 dias
+const VALIDADE_DESCADASTRO_MS = 365 * 24 * 60 * 60 * 1000; // 1 ano — link não deve expirar
 
 async function urlNaoEraPraMim(alertaId: string, agoraMs: number): Promise<string | undefined> {
   if (!env.AUTH_SECRET) return undefined;
   const token = await assinarValor(alertaId, env.AUTH_SECRET, agoraMs, VALIDADE_FEEDBACK_MS);
   return `${env.NEXT_PUBLIC_APP_URL}/feedback?a=${alertaId}&t=${encodeURIComponent(token)}`;
+}
+
+async function urlDescadastro(email: string, agoraMs: number): Promise<string | undefined> {
+  if (!env.AUTH_SECRET) return undefined;
+  const token = await assinarValor(email, env.AUTH_SECRET, agoraMs, VALIDADE_DESCADASTRO_MS);
+  return `${env.NEXT_PUBLIC_APP_URL}/descadastrar?t=${encodeURIComponent(token)}`;
 }
 
 export type ResultadoEnviar = { pendentes: number; enviados: number; simulados: number; falhas: number };
@@ -61,6 +68,7 @@ export async function enviarJob(agora: () => Date = () => new Date()): Promise<R
       env.NEXT_PUBLIC_APP_URL,
       momento,
       await urlNaoEraPraMim(p.alertaId, momento.getTime()),
+      await urlDescadastro(p.email, momento.getTime()),
     );
 
     try {

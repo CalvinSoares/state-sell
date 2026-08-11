@@ -34,6 +34,8 @@ export type EmailAlerta = {
   comoParticiparUrl: string;
   /** link assinado "não era pra mim" (opcional; montado no job com o alertaId) */
   naoEraPraMimUrl?: string;
+  /** link assinado de descadastro (opcional; montado no job com o e-mail) */
+  descadastrarUrl?: string;
   /** por que este alerta chegou — rodapé de transparência */
   porque: string;
 };
@@ -92,6 +94,7 @@ export function comporEmail(
   appUrl: string,
   agora: Date,
   naoEraPraMimUrl?: string,
+  descadastrarUrl?: string,
 ): EmailAlerta {
   const prazo = prazoTexto(c.dataEncerramentoProposta, agora);
   const diaSemana = prazo.split(",")[0];
@@ -126,6 +129,7 @@ export function comporEmail(
     verEditalUrl: linkEdital,
     comoParticiparUrl: `${appUrl}/trilha`,
     naoEraPraMimUrl,
+    descadastrarUrl,
     porque: `Esse aviso chegou porque você vende ${ramoRotuloCurto(ramoRotulo)}${
       termosCasados.length ? ` (encontramos: ${termosCasados.slice(0, 3).join(", ")})` : ""
     } em ${tituloCaso(c.municipioNome)}.`,

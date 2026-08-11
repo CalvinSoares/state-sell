@@ -19,6 +19,7 @@ export async function enviarEmailBruto(
   assunto: string,
   html: string,
   texto: string,
+  opts: { listUnsubscribeUrl?: string } = {},
 ): Promise<ResultadoEnvio> {
   const decisao = decidirEnvio(env.NODE_ENV, env.RESEND_MODE, Boolean(env.RESEND_API_KEY));
 
@@ -30,13 +31,28 @@ export async function enviarEmailBruto(
     return { enviado: false, simulado: true, resendId: null };
   }
 
+  // List-Unsubscribe (RFC 8058): melhora entregabilidade e evita marcação de spam.
+  const headers = opts.listUnsubscribeUrl
+    ? {
+        "List-Unsubscribe": `<${opts.listUnsubscribeUrl}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      }
+    : undefined;
+
   const resp = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
       authorization: `Bearer ${env.RESEND_API_KEY}`,
       "content-type": "application/json",
     },
-    body: JSON.stringify({ from: REMETENTE, to: destinatario, subject: assunto, html, text: texto }),
+    body: JSON.stringify({
+      from: REMETENTE,
+      to: destinatario,
+      subject: assunto,
+      html,
+      text: texto,
+      ...(headers ? { headers } : {}),
+    }),
   });
 
   if (!resp.ok) {
@@ -53,5 +69,7 @@ export async function enviarEmailAlerta(
   destinatario: string,
   email: EmailAlerta,
 ): Promise<ResultadoEnvio> {
-  return enviarEmailBruto(destinatario, email.assunto, renderHtml(email), renderTexto(email));
+  return enviarEmailBruto(destinatario, email.assunto, renderHtml(email), renderTexto(email), {
+    listUnsubscribeUrl: email.descadastrarUrl,
+  });
 }
