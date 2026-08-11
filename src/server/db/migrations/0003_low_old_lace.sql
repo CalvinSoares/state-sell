@@ -1,0 +1,1 @@
+ALTER TABLE "alerta" ADD COLUMN "lembrado_em" timestamp with time zone;

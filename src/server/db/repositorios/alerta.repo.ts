@@ -260,6 +260,35 @@ export async function reivindicarParaEnvio(limite = 200) {
   return selectDetalhesAlerta().where(inArray(alerta.id, ids));
 }
 
+/**
+ * Reivindica alertas para o lembrete D-1: já enviados, ainda sem lembrete, cuja
+ * contratação segue aberta e o prazo cai dentro da janela. Marca lembrado_em no
+ * claim (atômico, dup-safe) e devolve os detalhes. Ver roadmap (lembrete D-1).
+ */
+export async function reivindicarParaLembrete(agora: Date, janelaMs: number, limite = 500) {
+  const agoraIso = agora.toISOString();
+  const limiteIso = new Date(agora.getTime() + janelaMs).toISOString();
+  const claimed = await db.execute(sql`
+    update alerta set lembrado_em = now()
+    where id in (
+      select a.id from alerta a
+      join contratacao c on c.id = a.contratacao_id
+      where a.status = 'enviado'
+        and a.lembrado_em is null
+        and c.situacao_compra_id = 1
+        and c.data_encerramento_proposta > ${agoraIso}::timestamptz
+        and c.data_encerramento_proposta <= ${limiteIso}::timestamptz
+      order by c.data_encerramento_proposta
+      limit ${limite}
+      for update skip locked
+    )
+    returning id
+  `);
+  const ids = (claimed as unknown as { id: string }[]).map((r) => r.id);
+  if (ids.length === 0) return [];
+  return selectDetalhesAlerta().where(inArray(alerta.id, ids));
+}
+
 /** Marca enviado na mesma transação lógica do retorno do provedor. */
 export async function marcarEnviado(alertaId: string, resendId: string | null, enviadoEm: Date) {
   await db

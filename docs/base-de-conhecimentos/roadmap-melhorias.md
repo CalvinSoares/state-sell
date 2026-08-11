@@ -65,6 +65,12 @@ Rodada por agente lendo o código. **Corrigido:**
 - **`/verificar` continua GET** (magic link é clicado): ativação idempotente + uso único; risco baixo, mantido GET para não atritar o login.
 - **Seleção de candidatas em memória** (perfis × candidatas): ok e limitado no volume atual; reavaliar com pré-filtro por região no banco quando a escala pedir.
 
+## Conversão e produto (feito)
+
+- **Prévia "o que já está aberto pra você"** no cadastro — mostra oportunidades reais no primeiro minuto. ✔
+- **E-mail de alerta redesenhado** (tabelas, mobile-first) + descadastro com `List-Unsubscribe` (RFC 8058). ✔
+- **Lembrete D-1**: quem já recebeu o alerta é avisado quando o prazo cai em até 36h ("Última chamada"). Reivindicação atômica (`lembrado_em`), no `tick` e em `/api/cron/lembrar`. ✔
+
 ## Fase 3.2 — Ramos (parcial)
 
 Catálogo de **5 → 11 ramos**: + jardinagem, transporte, veterinária, material de

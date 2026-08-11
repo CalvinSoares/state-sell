@@ -30,6 +30,8 @@ export const alerta = pgTable(
     resendId: text("resend_id"),
     abertoEm: timestamp("aberto_em", { withTimezone: true }),
     clicadoEm: timestamp("clicado_em", { withTimezone: true }),
+    // lembrete D-1: preenchido quando o aviso de "prazo acabando" foi enviado
+    lembradoEm: timestamp("lembrado_em", { withTimezone: true }),
     criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [

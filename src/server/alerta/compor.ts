@@ -95,6 +95,7 @@ export function comporEmail(
   agora: Date,
   naoEraPraMimUrl?: string,
   descadastrarUrl?: string,
+  lembrete = false,
 ): EmailAlerta {
   const prazo = prazoTexto(c.dataEncerramentoProposta, agora);
   const diaSemana = prazo.split(",")[0];
@@ -116,10 +117,16 @@ export function comporEmail(
   // Só afirma exclusividade se o DADO diz isso (tipoBeneficio), nunca por valor.
   if (item.exclusivoMeEpp) linhas.push("Exclusivo para micro e pequena empresa.");
 
-  const titulo = `${orgaoHumano(c.orgaoRazaoSocial, c.municipioNome)} quer comprar ${ramoRotuloCurto(ramoRotulo)}.`;
+  const orgao = orgaoHumano(c.orgaoRazaoSocial, c.municipioNome);
+  const ramo = ramoRotuloCurto(ramoRotulo);
+  const titulo = lembrete
+    ? `Última chamada: ${orgao} quer comprar ${ramo}.`
+    : `${orgao} quer comprar ${ramo}.`;
 
   return {
-    assunto: `${orgaoHumano(c.orgaoRazaoSocial, c.municipioNome)} quer comprar ${ramoRotuloCurto(ramoRotulo)} — prazo até ${diaSemana}`,
+    assunto: lembrete
+      ? `Última chamada: ${orgao} quer comprar ${ramo} — prazo até ${diaSemana}`
+      : `${orgao} quer comprar ${ramo} — prazo até ${diaSemana}`,
     titulo,
     linhas,
     avisoEscala: item.escala

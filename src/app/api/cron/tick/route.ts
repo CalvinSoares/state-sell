@@ -3,6 +3,7 @@ import { coletarJob } from "@/src/server/coleta/coletar.job";
 import { casarJob } from "@/src/server/coleta/casar.job";
 import { alertarJob } from "@/src/server/alerta/alertar.job";
 import { enviarJob } from "@/src/server/alerta/enviar.job";
+import { lembrarJob } from "@/src/server/alerta/lembrar.job";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
@@ -30,6 +31,7 @@ export async function GET(req: Request) {
   const casar = await etapa(casarJob);
   const alertar = await etapa(alertarJob);
   const enviar = await etapa(enviarJob);
+  const lembrar = await etapa(lembrarJob);
 
-  return Response.json({ ok: true, etapa: "tick", coletar, casar, alertar, enviar });
+  return Response.json({ ok: true, etapa: "tick", coletar, casar, alertar, enviar, lembrar });
 }
