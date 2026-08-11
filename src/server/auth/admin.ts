@@ -7,7 +7,7 @@ import { NOME_COOKIE_SESSAO, verificarSessao } from "./sessao";
 export async function adminAtual(): Promise<string | null> {
   if (!env.AUTH_SECRET) return null;
   const token = (await cookies()).get(NOME_COOKIE_SESSAO)?.value;
-  const email = await verificarSessao(token, env.AUTH_SECRET, Date.now());
+  const email = await verificarSessao(token, env.AUTH_SECRET, Date.now(), "admin");
   if (!email || !adminEmails().includes(email)) return null;
   return email;
 }

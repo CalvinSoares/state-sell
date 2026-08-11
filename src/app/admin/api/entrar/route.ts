@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     return erro;
   }
 
-  const token = await assinarSessao(email, env.AUTH_SECRET, Date.now());
+  const token = await assinarSessao(email, env.AUTH_SECRET, Date.now(), { aud: "admin" });
   const resp = NextResponse.redirect(new URL("/admin", base), { status: 303 });
   resp.cookies.set(NOME_COOKIE_SESSAO, token, {
     httpOnly: true,

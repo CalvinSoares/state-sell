@@ -8,6 +8,12 @@ import { grafica } from "./grafica";
 import { informatica } from "./informatica";
 import { limpeza } from "./limpeza";
 import { manutencaoPredial } from "./manutencao-predial";
+import { jardinagem } from "./jardinagem";
+import { transporte } from "./transporte";
+import { veterinaria } from "./veterinaria";
+import { materialEscritorio } from "./material-escritorio";
+import { mobiliario } from "./mobiliario";
+import { costura } from "./costura";
 
 export const RAMOS: readonly Ramo[] = [
   alimentacao,
@@ -15,6 +21,12 @@ export const RAMOS: readonly Ramo[] = [
   grafica,
   limpeza,
   manutencaoPredial,
+  jardinagem,
+  transporte,
+  veterinaria,
+  materialEscritorio,
+  mobiliario,
+  costura,
 ] as const;
 
 export const RAMOS_POR_SLUG: ReadonlyMap<string, Ramo> = new Map(

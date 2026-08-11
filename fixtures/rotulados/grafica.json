@@ -26,9 +26,9 @@
   {
     "descricaoItem": "Papel A4 branco 75g resma com 500 folhas",
     "objetoCompra": "Aquisição de materiais de consumo: capa processo, caixa arquivo, papel A4",
-    "ramoEsperado": null,
+    "ramoEsperado": "material-escritorio",
     "origem": "seed",
     "origemAmostra": "dirigida",
-    "nota": "NEGATIVO DIFÍCIL — papel A4 é material de escritório, não serviço gráfico"
+    "nota": "papel A4 é material de escritório (não gráfica). Relabelado ao criar o ramo material-escritorio."
   }
 ]

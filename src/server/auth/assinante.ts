@@ -7,5 +7,5 @@ import { NOME_COOKIE_PUBLICO, verificarSessao } from "./sessao";
 export async function assinanteAtual(): Promise<string | null> {
   if (!env.AUTH_SECRET) return null;
   const token = (await cookies()).get(NOME_COOKIE_PUBLICO)?.value;
-  return verificarSessao(token, env.AUTH_SECRET, Date.now());
+  return verificarSessao(token, env.AUTH_SECRET, Date.now(), "assinante");
 }

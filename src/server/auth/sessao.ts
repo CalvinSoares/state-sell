@@ -16,7 +16,13 @@ export const NOME_COOKIE_PUBLICO = "ss_assinante";
 /** Validade do magic link de acesso (curta, uso único na prática pelo exp). */
 export const VALIDADE_MAGIC_MS = 1000 * 60 * 30; // 30 min
 
-type Payload = { email: string; exp: number };
+/**
+ * Audiência do token — separa admin, assinante e magic link. Um token de uma
+ * audiência NÃO vale para outra, mesmo com o mesmo segredo. Ver auditoria #7.
+ */
+export type Audiencia = "admin" | "assinante" | "magic";
+
+type Payload = { email: string; exp: number; aud: Audiencia };
 
 function base64url(bytes: Uint8Array): string {
   let bin = "";
@@ -50,9 +56,13 @@ export async function assinarSessao(
   email: string,
   segredo: string,
   agoraMs: number,
-  validadeMs: number = VALIDADE_MS,
+  opts: { validadeMs?: number; aud?: Audiencia } = {},
 ): Promise<string> {
-  const payload: Payload = { email: email.toLowerCase(), exp: agoraMs + validadeMs };
+  const payload: Payload = {
+    email: email.toLowerCase(),
+    exp: agoraMs + (opts.validadeMs ?? VALIDADE_MS),
+    aud: opts.aud ?? "assinante",
+  };
   const corpo = base64url(new TextEncoder().encode(JSON.stringify(payload)));
   const chave = await chaveHmac(segredo);
   const assinatura = new Uint8Array(
@@ -61,11 +71,15 @@ export async function assinarSessao(
   return `${corpo}.${base64url(assinatura)}`;
 }
 
-/** Verifica assinatura e expiração. Retorna o e-mail ou null. */
+/**
+ * Verifica assinatura, expiração e audiência. Retorna o e-mail ou null.
+ * `audEsperada` obrigatória: um token de outra audiência é rejeitado.
+ */
 export async function verificarSessao(
   token: string | undefined,
   segredo: string,
   agoraMs: number,
+  audEsperada: Audiencia,
 ): Promise<string | null> {
   if (!token) return null;
   const [corpo, assinatura] = token.split(".");
@@ -83,6 +97,7 @@ export async function verificarSessao(
   try {
     const payload = JSON.parse(new TextDecoder().decode(deBase64url(corpo))) as Payload;
     if (typeof payload.exp !== "number" || payload.exp < agoraMs) return null;
+    if (payload.aud !== audEsperada) return null;
     return payload.email;
   } catch {
     return null;

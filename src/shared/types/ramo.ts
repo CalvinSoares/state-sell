@@ -36,4 +36,4 @@ export type Ramo = {
 };
 
 /** Versão do catálogo. Incrementar a cada mudança em content/ramos/*. */
-export const VERSAO_CATALOGO = 1;
+export const VERSAO_CATALOGO = 2;

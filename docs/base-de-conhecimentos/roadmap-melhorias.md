@@ -48,13 +48,25 @@ Rodada por agente lendo o código. **Corrigido:**
 - **Rate limit** nas procedures públicas de e-mail (`criar`, `enviarLinkAcesso`): janela fixa atômica no Postgres (tabela `rate_limit`), 10/h por IP e 3/h por e-mail. Sem infra extra. ✔
 - **Teto diário de alertas** agora desconta o que foi criado nas últimas 24h e exclui pares já alertados → o excedente eventualmente sai, em vez de ser descartado. ✔
 
+**Corrigido (3ª leva):**
+
+- **Audiência de token** (`aud`): admin, assinante e magic link agora têm claim de audiência; um token de uma audiência não vale para outra. ✔
+- **GET com efeito colateral no `/feedback`**: GET só mostra um botão; o registro é no POST → scanner de e-mail não polui os dados. ✔
+
 **Pendente (decisão de produto / fase futura):**
 
 - **CAPTCHA** no cadastro (o rate limit já mitiga o mail-bombing; CAPTCHA endurece mais).
-- **Audiência de token** (admin/assinante/magic usam mesmo formato): adicionar claim `aud`.
-- **GET com efeito colateral** em `/verificar` e `/feedback`: idealmente POST com confirmação de 1 clique.
+- **`/verificar` continua GET** (magic link é clicado): ativação é idempotente e a sessão vai para quem clica, então o risco é baixo — mantido GET para não atritar o login.
 - **Magic link reutilizável na validade** (30 min, sem nonce de uso único).
 - **N+1 e carga sem limite** no resumo semanal e na seleção de candidatas (escala).
+
+## Fase 3.2 — Ramos (parcial)
+
+Catálogo de **5 → 11 ramos**: + jardinagem, transporte, veterinária, material de
+escritório, mobiliário, costura. `VERSAO_CATALOGO=2` (reclassifica tudo no
+próximo `casar`). Precisão 1.00 / recall 1.00 nas fixtures-semente (11 ramos).
+**Ainda precisam de rotulagem real** (~60 itens/ramo em `/admin/rotular`) para
+validar precisão em produção — as definições são um ponto de partida.
 
 ## Fase 3 — Cobertura e escala
 

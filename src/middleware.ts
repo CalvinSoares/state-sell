@@ -12,7 +12,7 @@ export async function middleware(req: NextRequest) {
 
   if (pathname.startsWith("/painel")) {
     const token = req.cookies.get(NOME_COOKIE_PUBLICO)?.value;
-    const email = segredo ? await verificarSessao(token, segredo, Date.now()) : null;
+    const email = segredo ? await verificarSessao(token, segredo, Date.now(), "assinante") : null;
     if (!email) {
       return NextResponse.redirect(new URL("/entrar", req.url));
     }
@@ -29,7 +29,7 @@ export async function middleware(req: NextRequest) {
     .map((e) => e.trim().toLowerCase())
     .filter(Boolean);
   const token = req.cookies.get(NOME_COOKIE_SESSAO)?.value;
-  const email = segredo ? await verificarSessao(token, segredo, Date.now()) : null;
+  const email = segredo ? await verificarSessao(token, segredo, Date.now(), "admin") : null;
 
   if (!email || !allowlist.includes(email)) {
     return NextResponse.redirect(new URL("/admin/entrar", req.url));

@@ -78,7 +78,7 @@ export const cadastroRouter = router({
     });
 
     // magic link de confirmação (curto). novo=1 → cai em /pronto (onboarding).
-    const token = await assinarSessao(email, exigirSegredo(), Date.now(), VALIDADE_MAGIC_MS);
+    const token = await assinarSessao(email, exigirSegredo(), Date.now(), { validadeMs: VALIDADE_MAGIC_MS, aud: "magic" });
     const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}&novo=1`;
     await enviarEmailBruto(
       email,
@@ -101,7 +101,7 @@ export const cadastroRouter = router({
     .mutation(async ({ input, ctx }) => {
       const email = input.email.trim().toLowerCase();
       await limitarEnvio(ctx.headers, email);
-      const token = await assinarSessao(email, exigirSegredo(), Date.now(), VALIDADE_MAGIC_MS);
+      const token = await assinarSessao(email, exigirSegredo(), Date.now(), { validadeMs: VALIDADE_MAGIC_MS, aud: "magic" });
       const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}`;
       await enviarEmailBruto(
         email,

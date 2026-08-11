@@ -19,8 +19,8 @@ export const grafica: Ramo = {
     "cartilha",
     "adesivo",
     "faixa em lona",
-    "camiseta",
-    "confeccao de uniformes",
+    "estampa",
+    "camiseta estampada",
   ],
 
   termos: [
@@ -34,6 +34,8 @@ export const grafica: Ramo = {
     "carimbo",
     "cracha",
     "certificado impresso",
+    "camiseta",
+    "personalizada",
   ],
 
   // Veto: comprar a impressora é informática; papel A4 solto é material de escritório.

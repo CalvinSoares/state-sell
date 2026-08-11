@@ -10,7 +10,7 @@ async function emailAdmin(headers: Headers): Promise<string | null> {
   // âncora (?:^|;\s*) para não casar cookie com nome-sufixo (ex.: xss_sessao=).
   const match = cookie.match(new RegExp(`(?:^|;\\s*)${NOME_COOKIE_SESSAO}=([^;]+)`));
   const token = match?.[1];
-  const email = await verificarSessao(token, env.AUTH_SECRET, Date.now());
+  const email = await verificarSessao(token, env.AUTH_SECRET, Date.now(), "admin");
   if (!email || !adminEmails().includes(email)) return null;
   return email;
 }
