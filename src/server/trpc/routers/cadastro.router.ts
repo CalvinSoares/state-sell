@@ -7,6 +7,12 @@ import { FAIXAS_TETO, tetoParaCentavos, type FaixaTeto } from "@/src/shared/conf
 import { assinarSessao, VALIDADE_MAGIC_MS } from "@/src/server/auth/sessao";
 import { criarOuAtualizarAssinante } from "@/src/server/db/repositorios/assinante.repo";
 import { enviarEmailBruto } from "@/src/server/alerta/enviar.action";
+import { previaOportunidades } from "@/src/server/db/repositorios/previa.repo";
+import { orgaoHumano, ramoRotuloCurto } from "@/src/server/alerta/compor";
+import { prazoTexto } from "@/src/shared/utils/data";
+import { valorAproximado } from "@/src/shared/utils/formatador";
+import { VERSAO_CATALOGO } from "@/src/shared/types/ramo";
+import { RAMOS_POR_SLUG } from "@/content/ramos";
 import { buscarMunicipios, municipioPorCodigo } from "@/src/server/ibge/municipios";
 import { UFS } from "@/src/shared/config/ufs";
 import { publicProcedure, router } from "../trpc";
@@ -53,6 +59,57 @@ export const cadastroRouter = router({
   buscarMunicipios: publicProcedure
     .input(z.object({ uf: z.enum(UFS), termo: z.string() }))
     .query(({ input }) => buscarMunicipios(input.uf, input.termo)),
+
+  /**
+   * Prévia: oportunidades ABERTAS que já batem com o perfil. É o "olha, isso
+   * está aberto pra você" que faz a pessoa acreditar no cadastro. Só leitura.
+   */
+  previa: publicProcedure
+    .input(
+      z.object({
+        uf: z.enum(UFS),
+        abrangencia: z.enum(["cidade", "estado"]),
+        codigoMunicipio: z.string().optional(),
+        ramos: z.array(z.enum(SLUGS)).min(1),
+        teto: z.enum(FAIXAS),
+      }),
+    )
+    .query(async ({ input }) => {
+      const municipiosIbge =
+        input.abrangencia === "cidade" && input.codigoMunicipio ? [input.codigoMunicipio] : [];
+
+      const ops = await previaOportunidades(
+        {
+          ramos: input.ramos,
+          municipiosIbge,
+          uf: input.uf,
+          tetoValorCentavos: tetoParaCentavos(input.teto),
+        },
+        new Date(),
+        VERSAO_CATALOGO,
+      );
+
+      const agora = new Date();
+      const ordenadas = [...ops].sort((a, b) => {
+        if (a.exclusivoMeEpp !== b.exclusivoMeEpp) return a.exclusivoMeEpp ? -1 : 1;
+        const pa = a.dataEncerramentoProposta?.getTime() ?? Infinity;
+        const pb = b.dataEncerramentoProposta?.getTime() ?? Infinity;
+        return pa - pb;
+      });
+
+      return {
+        total: ops.length,
+        itens: ordenadas.slice(0, 3).map((o) => ({
+          titulo: `${orgaoHumano(o.orgaoRazaoSocial, o.municipioNome)} quer comprar ${ramoRotuloCurto(
+            RAMOS_POR_SLUG.get(o.ramoSlug)?.rotulo ?? o.ramoSlug,
+          )}`,
+          item: o.itemDescricao.slice(0, 90),
+          valor: valorAproximado(o.valorTotalEstimadoCentavos),
+          prazo: o.dataEncerramentoProposta ? prazoTexto(o.dataEncerramentoProposta, agora) : null,
+          exclusivo: o.exclusivoMeEpp,
+        })),
+      };
+    }),
 
   criar: publicProcedure.input(CadastroSchema).mutation(async ({ input, ctx }) => {
     const email = input.email.trim().toLowerCase();

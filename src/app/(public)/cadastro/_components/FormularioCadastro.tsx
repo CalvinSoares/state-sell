@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useCadastro, useMunicipios } from "../hook/cadastro.hook";
+import { useCadastro, useMunicipios, usePrevia } from "../hook/cadastro.hook";
 
 type RamoOpcao = { slug: string; rotulo: string; ajuda: string };
 type FaixaOpcao = { valor: string; rotulo: string };
@@ -25,14 +25,23 @@ export function FormularioCadastro({ ramos, faixas, ufs }: Props) {
 
   const { sugestoes, buscando } = useMunicipios(uf, cidade ? "" : cidadeTermo);
 
+  const { previa, carregando: carregandoPrevia } = usePrevia(
+    { uf, abrangencia, codigoMunicipio: cidade?.codigoIbge, ramos: ramosSel, teto },
+    c.enviado,
+  );
+
   if (c.enviado) {
     return (
-      <Cartao>
-        <h2 style={{ marginTop: 0 }}>Falta um passo</h2>
-        <p style={{ color: "var(--suave)" }}>
-          Enviamos um link para o seu e-mail. Abra e confirme para começar a receber os avisos.
-        </p>
-      </Cartao>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <Cartao>
+          <h2 style={{ marginTop: 0 }}>Falta um passo</h2>
+          <p style={{ color: "var(--suave)", margin: 0 }}>
+            Enviamos um link para o seu e-mail. Abra e confirme para começar a receber os avisos.
+          </p>
+        </Cartao>
+
+        <PreviaOportunidades previa={previa} carregando={carregandoPrevia} />
+      </div>
     );
   }
 
@@ -181,6 +190,74 @@ export function FormularioCadastro({ ramos, faixas, ufs }: Props) {
   );
 }
 
+type PreviaData = {
+  total: number;
+  itens: {
+    titulo: string;
+    item: string;
+    valor: string | null;
+    prazo: string | null;
+    exclusivo: boolean;
+  }[];
+};
+
+/** "Olha o que já está aberto pra você" — o momento que faz a pessoa acreditar. */
+function PreviaOportunidades({
+  previa,
+  carregando,
+}: {
+  previa: PreviaData | undefined;
+  carregando: boolean;
+}) {
+  if (carregando) {
+    return (
+      <p style={{ color: "var(--suave)" }}>Procurando o que já está aberto para você agora…</p>
+    );
+  }
+  if (!previa || previa.itens.length === 0) {
+    return (
+      <Cartao>
+        <strong>Nada aberto exatamente pra você neste momento.</strong>
+        <p style={{ color: "var(--suave)", margin: ".4rem 0 0" }}>
+          É normal — as compras aparecem o tempo todo. Assim que surgir algo que serve, você recebe
+          o e-mail. No sábado a gente manda um resumo de qualquer jeito.
+        </p>
+      </Cartao>
+    );
+  }
+  return (
+    <div>
+      <h2 style={{ fontSize: "1.15rem", margin: "0 0 .25rem" }}>
+        Olha o que <span style={{ color: "var(--acento)" }}>já está aberto</span> pra você agora
+      </h2>
+      <p style={{ color: "var(--suave)", margin: "0 0 1rem", fontSize: ".9rem" }}>
+        Isso é o tipo de aviso que vai chegar no seu e-mail. Acontece todo dia.
+      </p>
+      <div style={{ display: "grid", gap: ".75rem" }}>
+        {previa.itens.map((o, i) => (
+          <div key={i} style={{ ...cartaoBase, borderLeft: "3px solid var(--acento)" }}>
+            <strong>{o.titulo}.</strong>
+            <p style={{ margin: ".35rem 0 0", color: "var(--suave)" }}>{o.item}</p>
+            {o.valor ? <p style={{ margin: ".15rem 0 0", color: "var(--suave)" }}>{o.valor}.</p> : null}
+            {o.exclusivo ? (
+              <p style={{ margin: ".15rem 0 0", color: "var(--acento)", fontWeight: 600 }}>
+                Exclusivo para micro e pequena empresa.
+              </p>
+            ) : null}
+            {o.prazo ? <p style={{ margin: ".35rem 0 0", fontWeight: 600 }}>Prazo: {o.prazo}.</p> : null}
+          </div>
+        ))}
+      </div>
+      {previa.total > previa.itens.length ? (
+        <p style={{ color: "var(--suave)", marginTop: ".75rem", fontSize: ".9rem" }}>
+          E mais {previa.total - previa.itens.length} abertas agora. Confirme seu e-mail para receber
+          na hora certa.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 function Pergunta({
   numero,
   titulo,
@@ -242,6 +319,13 @@ function Cartao({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
+
+const cartaoBase: React.CSSProperties = {
+  background: "var(--cartao)",
+  border: "1px solid var(--borda)",
+  borderRadius: 12,
+  padding: "1rem 1.15rem",
+};
 
 const campo: React.CSSProperties = {
   width: "100%",
