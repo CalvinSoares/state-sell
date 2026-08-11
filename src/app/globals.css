@@ -2,22 +2,51 @@
   --fundo: #fbfaf7;
   --cartao: #ffffff;
   --tinta: #1b1a17;
-  --suave: #6b6a63;
+  --suave: #5f5e57;
   --acento: #1f6f43;
-  --acento-suave: #eef6f0;
-  --borda: #e7e4dc;
+  --acento-forte: #185737;
+  --acento-suave: #eaf4ee;
+  --borda: #e2ded4;
+  --campo-bg: #ffffff;
+  --desabilitado-bg: #d8d5cd;
+  --desabilitado-tinta: #8a877e;
+  --erro: #b3261e;
+  --sombra: 0 6px 20px rgba(20, 19, 15, 0.08);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --fundo: #14130f;
-    --cartao: #1c1b17;
+    --cartao: #1f1d18;
     --tinta: #f2f0ea;
-    --suave: #a7a49a;
+    --suave: #a9a69c;
     --acento: #4bbf7e;
-    --acento-suave: #16281d;
-    --borda: #2c2a24;
+    --acento-forte: #63d090;
+    --acento-suave: #17291e;
+    --borda: #34312a;
+    --campo-bg: #26241e;
+    --desabilitado-bg: #34312a;
+    --desabilitado-tinta: #6f6c62;
+    --erro: #ff8f86;
+    --sombra: 0 6px 22px rgba(0, 0, 0, 0.45);
   }
+}
+
+/* Override explícito quando o usuário escolhe (vence o prefers). */
+:root[data-theme="dark"] {
+  --fundo: #14130f;
+  --cartao: #1f1d18;
+  --tinta: #f2f0ea;
+  --suave: #a9a69c;
+  --acento: #4bbf7e;
+  --acento-forte: #63d090;
+  --acento-suave: #17291e;
+  --borda: #34312a;
+  --campo-bg: #26241e;
+  --desabilitado-bg: #34312a;
+  --desabilitado-tinta: #6f6c62;
+  --erro: #ff8f86;
+  --sombra: 0 6px 22px rgba(0, 0, 0, 0.45);
 }
 
 * {
@@ -37,4 +66,34 @@ body {
 
 a {
   color: var(--acento);
+}
+
+/* Controles de formulário — tema-aware por padrão. */
+input,
+select,
+textarea {
+  background: var(--campo-bg);
+  color: var(--tinta);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--suave);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 1px;
+}
+
+select option {
+  background: var(--cartao);
+  color: var(--tinta);
 }

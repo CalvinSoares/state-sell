@@ -1,7 +1,16 @@
+import { RAMOS } from "@/content/ramos";
+import { FAIXAS_TETO } from "@/src/shared/config/faixas-teto";
+import { UFS } from "@/src/shared/config/ufs";
 import { FormularioCadastro } from "./_components/FormularioCadastro";
 
-/** Composição — sem lógica. As 3 perguntas vivem no formulário. */
+/**
+ * Composição — sem lógica. Passa os dados estáticos (ramos, faixas, UFs) já
+ * renderizados no servidor, para não haver pop-in de conteúdo no cliente.
+ */
 export default function CadastroPage() {
+  const ramos = RAMOS.map((r) => ({ slug: r.slug, rotulo: r.rotulo, ajuda: r.ajuda }));
+  const faixas = FAIXAS_TETO.map((f) => ({ valor: f.valor, rotulo: f.rotulo }));
+
   return (
     <main style={{ maxWidth: 600, margin: "3rem auto", padding: "0 1.25rem" }}>
       <p style={{ color: "var(--acento)", fontWeight: 600, margin: 0 }}>Prefeitura Quer</p>
@@ -10,7 +19,7 @@ export default function CadastroPage() {
         Três perguntas. Sem jargão. A promessa é: você vai saber quando a prefeitura quiser comprar o
         que você vende.
       </p>
-      <FormularioCadastro />
+      <FormularioCadastro ramos={ramos} faixas={faixas} ufs={[...UFS]} />
     </main>
   );
 }

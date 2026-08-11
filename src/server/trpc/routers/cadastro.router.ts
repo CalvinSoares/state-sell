@@ -6,15 +6,11 @@ import { assinarSessao, VALIDADE_MAGIC_MS } from "@/src/server/auth/sessao";
 import { criarOuAtualizarAssinante } from "@/src/server/db/repositorios/assinante.repo";
 import { enviarEmailBruto } from "@/src/server/alerta/enviar.action";
 import { buscarMunicipios, municipioPorCodigo } from "@/src/server/ibge/municipios";
+import { UFS } from "@/src/shared/config/ufs";
 import { publicProcedure, router } from "../trpc";
 
 const SLUGS = RAMOS.map((r) => r.slug) as [string, ...string[]];
 const FAIXAS = FAIXAS_TETO.map((f) => f.valor) as [FaixaTeto, ...FaixaTeto[]];
-
-const UFS = [
-  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR",
-  "PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
-] as const;
 
 const CadastroSchema = z
   .object({
@@ -33,12 +29,6 @@ const CadastroSchema = z
   });
 
 export const cadastroRouter = router({
-  faixasTeto: publicProcedure.query(() =>
-    FAIXAS_TETO.map((f) => ({ valor: f.valor, rotulo: f.rotulo })),
-  ),
-
-  ufs: publicProcedure.query(() => UFS),
-
   buscarMunicipios: publicProcedure
     .input(z.object({ uf: z.enum(UFS), termo: z.string() }))
     .query(({ input }) => buscarMunicipios(input.uf, input.termo)),

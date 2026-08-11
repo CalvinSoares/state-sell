@@ -5,19 +5,16 @@ import { api } from "@/src/shared/trpc/cliente";
 
 /** Busca de municípios (autocomplete). Só dispara com 2+ caracteres. */
 export function useMunicipios(uf: string, termo: string) {
-  const { data } = api.cadastro.buscarMunicipios.useQuery(
+  const habilitado = termo.trim().length >= 2;
+  const { data, isFetching } = api.cadastro.buscarMunicipios.useQuery(
     { uf: uf as never, termo },
-    { enabled: termo.trim().length >= 2 },
+    { enabled: habilitado },
   );
-  return data ?? [];
+  return { sugestoes: data ?? [], buscando: habilitado && isFetching && data === undefined };
 }
 
-/** Estado e submit do cadastro. Lógica fora do componente. */
+/** Submit do cadastro. Dados estáticos vêm por props (server-render), não daqui. */
 export function useCadastro() {
-  const { data: ramos } = api.ramo.listar.useQuery();
-  const { data: faixas } = api.cadastro.faixasTeto.useQuery();
-  const { data: ufs } = api.cadastro.ufs.useQuery();
-
   const [enviado, setEnviado] = useState(false);
 
   const { mutate, isPending, error } = api.cadastro.criar.useMutation({
@@ -25,9 +22,6 @@ export function useCadastro() {
   });
 
   return {
-    ramos: ramos ?? [],
-    faixas: faixas ?? [],
-    ufs: ufs ?? [],
     enviado,
     isPending,
     erro: error?.message ?? null,
