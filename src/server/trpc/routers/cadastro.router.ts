@@ -5,6 +5,7 @@ import { FAIXAS_TETO, tetoParaCentavos, type FaixaTeto } from "@/src/shared/conf
 import { assinarSessao } from "@/src/server/auth/sessao";
 import { criarOuAtualizarAssinante } from "@/src/server/db/repositorios/assinante.repo";
 import { enviarEmailBruto } from "@/src/server/alerta/enviar.action";
+import { buscarMunicipios, municipioPorCodigo } from "@/src/server/ibge/municipios";
 import { publicProcedure, router } from "../trpc";
 
 const SLUGS = RAMOS.map((r) => r.slug) as [string, ...string[]];
@@ -15,15 +16,21 @@ const UFS = [
   "PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
 ] as const;
 
-const CadastroSchema = z.object({
-  email: z.string().email("Digite um e-mail válido"),
-  nome: z.string().optional(),
-  uf: z.enum(UFS),
-  // v1: estado inteiro (municípios entram com o autocomplete IBGE — refinamento)
-  municipiosIbge: z.array(z.string()).default([]),
-  ramos: z.array(z.enum(SLUGS)).min(1, "Escolha o que você vende"),
-  teto: z.enum(FAIXAS),
-});
+const CadastroSchema = z
+  .object({
+    email: z.string().email("Digite um e-mail válido"),
+    nome: z.string().optional(),
+    uf: z.enum(UFS),
+    // abrangência: só a cidade escolhida, ou o estado inteiro
+    abrangencia: z.enum(["cidade", "estado"]),
+    codigoMunicipio: z.string().optional(),
+    ramos: z.array(z.enum(SLUGS)).min(1, "Escolha o que você vende"),
+    teto: z.enum(FAIXAS),
+  })
+  .refine((v) => v.abrangencia !== "cidade" || Boolean(v.codigoMunicipio), {
+    message: "Escolha a sua cidade",
+    path: ["codigoMunicipio"],
+  });
 
 export const cadastroRouter = router({
   faixasTeto: publicProcedure.query(() =>
@@ -32,14 +39,28 @@ export const cadastroRouter = router({
 
   ufs: publicProcedure.query(() => UFS),
 
+  buscarMunicipios: publicProcedure
+    .input(z.object({ uf: z.enum(UFS), termo: z.string() }))
+    .query(({ input }) => buscarMunicipios(input.uf, input.termo)),
+
   criar: publicProcedure.input(CadastroSchema).mutation(async ({ input }) => {
     const email = input.email.trim().toLowerCase();
+
+    // Resolve a abrangência em municípios de verdade, validando contra a base IBGE.
+    let municipiosIbge: string[] = [];
+    if (input.abrangencia === "cidade") {
+      const muni = input.codigoMunicipio ? municipioPorCodigo(input.codigoMunicipio) : undefined;
+      if (!muni || muni.uf !== input.uf) {
+        throw new Error("Cidade inválida para o estado escolhido");
+      }
+      municipiosIbge = [muni.codigoIbge];
+    }
 
     await criarOuAtualizarAssinante({
       email,
       nome: input.nome,
       uf: input.uf,
-      municipiosIbge: input.municipiosIbge,
+      municipiosIbge,
       ramos: input.ramos,
       tetoValorCentavos: tetoParaCentavos(input.teto),
     });

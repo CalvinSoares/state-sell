@@ -36,11 +36,19 @@ export type EmailAlerta = {
   porque: string;
 };
 
-/** Nome curto do órgão + cidade, sem CNPJ nem jargão. */
+const PREFIXO_MUNICIPAL = /^(MUNICIPIO DE|PREFEITURA MUNICIPAL DE|PREFEITURA DE)\s+/i;
+
+/**
+ * Nome humano do órgão, sem CNPJ nem jargão. Só chama de "Prefeitura" quando é
+ * de fato municipal — secretaria estadual, universidade e autarquia mantêm o
+ * próprio nome (o e-mail mentiria dizendo "A Prefeitura de Universidade...").
+ */
 function orgaoHumano(orgao: string, municipio: string): string {
-  const limpo = orgao.replace(/^(MUNICIPIO DE|PREFEITURA MUNICIPAL DE|PREFEITURA DE)\s+/i, "").trim();
-  // se o texto do órgão já é a cidade, evita "Prefeitura de X, em X"
-  return `A Prefeitura de ${tituloCaso(limpo || municipio)}`;
+  if (PREFIXO_MUNICIPAL.test(orgao)) {
+    const cidade = orgao.replace(PREFIXO_MUNICIPAL, "").trim() || municipio;
+    return `A Prefeitura de ${tituloCaso(cidade)}`;
+  }
+  return tituloCaso(orgao);
 }
 
 function tituloCaso(s: string): string {

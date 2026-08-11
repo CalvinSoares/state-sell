@@ -14,8 +14,8 @@ import { comConcorrencia } from "./concorrencia";
 import {
   chaveCursor,
   combinacoesPadrao,
+  dataFinalHorizonte,
   fezOrcamento,
-  formatarDataFinal,
   ordenarPorMaisAntigo,
   proximoCursor,
   type Combinacao,
@@ -40,7 +40,7 @@ export async function coletarJob(agora: () => number = Date.now): Promise<Result
   const inicio = agora();
   const cursores = await carregarCursores();
   const combinacoes = ordenarPorMaisAntigo(combinacoesPadrao(), cursores);
-  const dataFinal = formatarDataFinal(new Date(inicio));
+  const dataFinal = dataFinalHorizonte(inicio);
 
   const total: ResultadoColeta = {
     combinacoesProcessadas: 0,
@@ -82,6 +82,7 @@ async function processarCombinacao(
       dataFinal,
       codigoModalidadeContratacao: combo.modalidadeId,
       pagina,
+      uf: combo.uf,
     });
     paginasLidas++;
 

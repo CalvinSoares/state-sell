@@ -51,12 +51,25 @@ export function proximoCursor(
   return { ultimaPagina: paginasRestantes > 0 ? paginaAtual + 1 : 1 };
 }
 
-/** dataFinal exigida pela API, no formato AAAAMMDD, a partir de um Date. */
+/** Formata um Date como AAAAMMDD (UTC). */
 export function formatarDataFinal(d: Date): string {
   const ano = d.getUTCFullYear();
   const mes = String(d.getUTCMonth() + 1).padStart(2, "0");
   const dia = String(d.getUTCDate()).padStart(2, "0");
   return `${ano}${mes}${dia}`;
+}
+
+/**
+ * Horizonte de dias à frente para o `dataFinal` da consulta. O parâmetro é um
+ * teto na data de encerramento da proposta — precisa estar no FUTURO para
+ * capturar a janela aberta inteira. Janela mediana ~6d, máx observado 64d;
+ * 90 dias cobre com folga. Ver verificacao-de-viabilidade.md.
+ */
+export const HORIZONTE_DIAS = 90;
+
+/** dataFinal = agora + HORIZONTE_DIAS, em AAAAMMDD. */
+export function dataFinalHorizonte(agoraMs: number): string {
+  return formatarDataFinal(new Date(agoraMs + HORIZONTE_DIAS * 24 * 60 * 60 * 1000));
 }
 
 /**

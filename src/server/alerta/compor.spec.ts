@@ -34,6 +34,19 @@ describe("comporEmail", () => {
     expect(e.titulo).toBe("A Prefeitura de Sorocaba quer comprar alimentação.");
   });
 
+  it("órgão não-municipal NÃO vira 'Prefeitura de ...'", () => {
+    const e = comporEmail(
+      contratacao({ orgaoRazaoSocial: "SECRETARIA DA HABITACAO", municipioNome: "São Paulo" }),
+      item(),
+      "Gráfica e impressos",
+      [],
+      APP,
+      AGORA,
+    );
+    expect(e.titulo).not.toContain("Prefeitura de Secretaria");
+    expect(e.titulo).toContain("Secretaria da Habitacao");
+  });
+
   it("assunto tem órgão, ramo e dia da semana, sem 'modalidade'", () => {
     const e = comporEmail(contratacao(), item(), "Alimentação / marmitaria", [], APP, AGORA);
     expect(e.assunto).toContain("Sorocaba");
