@@ -14,7 +14,7 @@ const APLICAR_TEMA = `(function(){try{var t=localStorage.getItem('tema');if(t===
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: APLICAR_TEMA }} />
       </head>

@@ -2,9 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { NOME_COOKIE_PUBLICO, NOME_COOKIE_SESSAO, verificarSessao } from "@/src/server/auth/sessao";
 
 /**
- * Dois guards:
- * - /admin/* → allowlist; fora dela recebe 404 (não revela que a área existe).
- * - /painel → área do assinante; sem sessão redireciona para /entrar (amigável).
+ * Dois guards, ambos com redirect amigável para a tela de login:
+ * - /painel → área do assinante; sem sessão vai para /entrar.
+ * - /admin/* → backoffice; sem sessão de admin (allowlist) vai para /admin/entrar.
  */
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -32,7 +32,7 @@ export async function middleware(req: NextRequest) {
   const email = segredo ? await verificarSessao(token, segredo, Date.now()) : null;
 
   if (!email || !allowlist.includes(email)) {
-    return new NextResponse(null, { status: 404 }); // 404 deliberado
+    return NextResponse.redirect(new URL("/admin/entrar", req.url));
   }
 
   return NextResponse.next();

@@ -21,7 +21,8 @@ export async function POST(req: Request) {
     httpOnly: true,
     secure: env.NODE_ENV === "production",
     sameSite: "lax",
-    path: "/admin",
+    // path "/" (não "/admin"): o BFF vive em /api/trpc e precisa receber o cookie.
+    path: "/",
     maxAge: 60 * 60 * 12,
   });
   return resp;
