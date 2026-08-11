@@ -2,8 +2,8 @@
 
 > Avisa o pequeno negócio quando a prefeitura dele quer comprar exatamente o que ele vende.
 
-**Status:** planejamento aprovado para execução — Fase 0 concluída parcialmente (ver `docs/base-de-conhecimentos/dados/verificacao-de-viabilidade.md`).
-**Última atualização:** 10/08/2026
+**Status:** Fase 1 implementada (núcleo ponta a ponta) — falta ligar em banco real e verificar em produção. Fase 0 parcial (ver `docs/base-de-conhecimentos/dados/verificacao-de-viabilidade.md`).
+**Última atualização:** 11/08/2026
 
 ---
 

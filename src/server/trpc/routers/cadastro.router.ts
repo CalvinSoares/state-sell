@@ -1,0 +1,61 @@
+import { z } from "zod";
+import { env } from "@/src/env";
+import { RAMOS } from "@/content/ramos";
+import { FAIXAS_TETO, tetoParaCentavos, type FaixaTeto } from "@/src/shared/config/faixas-teto";
+import { assinarSessao } from "@/src/server/auth/sessao";
+import { criarOuAtualizarAssinante } from "@/src/server/db/repositorios/assinante.repo";
+import { enviarEmailBruto } from "@/src/server/alerta/enviar.action";
+import { publicProcedure, router } from "../trpc";
+
+const SLUGS = RAMOS.map((r) => r.slug) as [string, ...string[]];
+const FAIXAS = FAIXAS_TETO.map((f) => f.valor) as [FaixaTeto, ...FaixaTeto[]];
+
+const UFS = [
+  "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR",
+  "PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO",
+] as const;
+
+const CadastroSchema = z.object({
+  email: z.string().email("Digite um e-mail válido"),
+  nome: z.string().optional(),
+  uf: z.enum(UFS),
+  // v1: estado inteiro (municípios entram com o autocomplete IBGE — refinamento)
+  municipiosIbge: z.array(z.string()).default([]),
+  ramos: z.array(z.enum(SLUGS)).min(1, "Escolha o que você vende"),
+  teto: z.enum(FAIXAS),
+});
+
+export const cadastroRouter = router({
+  faixasTeto: publicProcedure.query(() =>
+    FAIXAS_TETO.map((f) => ({ valor: f.valor, rotulo: f.rotulo })),
+  ),
+
+  ufs: publicProcedure.query(() => UFS),
+
+  criar: publicProcedure.input(CadastroSchema).mutation(async ({ input }) => {
+    const email = input.email.trim().toLowerCase();
+
+    await criarOuAtualizarAssinante({
+      email,
+      nome: input.nome,
+      uf: input.uf,
+      municipiosIbge: input.municipiosIbge,
+      ramos: input.ramos,
+      tetoValorCentavos: tetoParaCentavos(input.teto),
+    });
+
+    // magic link de confirmação — reaproveita a sessão assinada
+    const token = await assinarSessao(email, env.AUTH_SECRET ?? "sem-segredo", Date.now());
+    const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}`;
+    await enviarEmailBruto(
+      email,
+      "Confirme seu e-mail — StateSell",
+      `<p>Falta um passo: confirme seu e-mail para começar a receber os avisos.</p>
+       <p><a href="${url}">Confirmar meu e-mail</a></p>`,
+      `Falta um passo: confirme seu e-mail.\n\n${url}`,
+    );
+
+    // Nunca revela se o e-mail já existia. Sempre a mesma resposta.
+    return { ok: true };
+  }),
+});

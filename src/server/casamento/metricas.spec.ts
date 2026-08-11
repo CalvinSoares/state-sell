@@ -34,8 +34,8 @@ describe("métricas do casamento", () => {
       const m = avaliarRamo(ramo, [...RAMOS], rotulados);
       return `${ramo.slug.padEnd(20)} precisão=${m.precisao.toFixed(2)} recall=${m.recall.toFixed(2)} (fp=${m.falsosPositivos} fn=${m.falsosNegativos})`;
     });
-    // Visível com `vitest --reporter=verbose`. Sempre passa.
-    console.info("\n" + linhas.join("\n"));
+    // Relatório de recall — escrito direto no stdout (sem console.*).
+    process.stdout.write("\n" + linhas.join("\n") + "\n");
     expect(true).toBe(true);
   });
 });

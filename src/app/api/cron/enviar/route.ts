@@ -1,4 +1,5 @@
 import { autorizarCron } from "@/src/server/cron/guard";
+import { enviarJob } from "@/src/server/alerta/enviar.job";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
@@ -7,5 +8,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   const naoAutorizado = autorizarCron(req);
   if (naoAutorizado) return naoAutorizado;
-  return Response.json({ ok: true, etapa: "enviar", pendente: "enviarJob()" });
+
+  const resultado = await enviarJob();
+  return Response.json({ ok: true, etapa: "enviar", ...resultado });
 }
