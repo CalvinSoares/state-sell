@@ -3,3 +3,4 @@ export * from "./contratacao";
 export * from "./alerta";
 export * from "./coleta";
 export * from "./backoffice";
+export * from "./rate-limit";

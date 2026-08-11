@@ -116,16 +116,19 @@ export function selecionarPara(
 }
 
 /**
- * Aplica o teto diário por assinante, ordenando por prioridade.
- * O excedente NÃO é descartado — fica de fora desta leva (o chamador o guarda
- * como pendente para o dia seguinte). Retorna { enviarAgora, adiar }.
+ * Distribui as seleções NOVAS respeitando o teto diário por assinante,
+ * descontando o que já foi criado nas últimas 24h. O excedente não é perdido:
+ * como o `criados24h` cai com o tempo, ele entra numa próxima execução.
+ * Puro. `criados24h` é o mapa assinanteId → nº de alertas criados na janela.
+ * Retorna { enviarAgora, adiar } (adiar = os que ficaram para depois).
+ * Ver auditoria #6.
  */
-export function aplicarTetoDiario(selecoes: Selecao[]): {
-  enviarAgora: Selecao[];
-  adiar: Selecao[];
-} {
+export function distribuirTetoDiario(
+  selecoesNovas: Selecao[],
+  criados24h: ReadonlyMap<string, number>,
+): { enviarAgora: Selecao[]; adiar: Selecao[] } {
   const porAssinante = new Map<string, Selecao[]>();
-  for (const s of selecoes) {
+  for (const s of selecoesNovas) {
     const lista = porAssinante.get(s.assinanteId) ?? [];
     lista.push(s);
     porAssinante.set(s.assinanteId, lista);
@@ -133,10 +136,11 @@ export function aplicarTetoDiario(selecoes: Selecao[]): {
 
   const enviarAgora: Selecao[] = [];
   const adiar: Selecao[] = [];
-  for (const lista of porAssinante.values()) {
+  for (const [assinanteId, lista] of porAssinante) {
     lista.sort((a, b) => a.prioridade - b.prioridade);
-    enviarAgora.push(...lista.slice(0, MAX_ALERTAS_DIA));
-    adiar.push(...lista.slice(MAX_ALERTAS_DIA));
+    const disponivel = Math.max(0, MAX_ALERTAS_DIA - (criados24h.get(assinanteId) ?? 0));
+    enviarAgora.push(...lista.slice(0, disponivel));
+    adiar.push(...lista.slice(disponivel));
   }
   return { enviarAgora, adiar };
 }

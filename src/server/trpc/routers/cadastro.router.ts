@@ -1,5 +1,7 @@
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 import { env } from "@/src/env";
+import { consumirLimite, ipDoRequest } from "@/src/server/rate-limit/limitar";
 import { RAMOS } from "@/content/ramos";
 import { FAIXAS_TETO, tetoParaCentavos, type FaixaTeto } from "@/src/shared/config/faixas-teto";
 import { assinarSessao, VALIDADE_MAGIC_MS } from "@/src/server/auth/sessao";
@@ -15,6 +17,19 @@ const SLUGS = RAMOS.map((r) => r.slug) as [string, ...string[]];
 function exigirSegredo(): string {
   if (!env.AUTH_SECRET) throw new Error("AUTH_SECRET não configurado");
   return env.AUTH_SECRET;
+}
+
+/** Rate limit (auditoria #2): protege as rotas que disparam e-mail de mail-bombing. */
+async function limitarEnvio(headers: Headers, email: string): Promise<void> {
+  const ip = ipDoRequest(headers);
+  const porIp = await consumirLimite(`envio:ip:${ip}`, 10, 3600); // 10/h por IP
+  const porEmail = await consumirLimite(`envio:email:${email}`, 3, 3600); // 3/h por e-mail
+  if (!porIp.permitido || !porEmail.permitido) {
+    throw new TRPCError({
+      code: "TOO_MANY_REQUESTS",
+      message: "Muitas tentativas. Tente de novo daqui a pouco.",
+    });
+  }
 }
 const FAIXAS = FAIXAS_TETO.map((f) => f.valor) as [FaixaTeto, ...FaixaTeto[]];
 
@@ -39,8 +54,9 @@ export const cadastroRouter = router({
     .input(z.object({ uf: z.enum(UFS), termo: z.string() }))
     .query(({ input }) => buscarMunicipios(input.uf, input.termo)),
 
-  criar: publicProcedure.input(CadastroSchema).mutation(async ({ input }) => {
+  criar: publicProcedure.input(CadastroSchema).mutation(async ({ input, ctx }) => {
     const email = input.email.trim().toLowerCase();
+    await limitarEnvio(ctx.headers, email);
 
     // Resolve a abrangência em municípios de verdade, validando contra a base IBGE.
     let municipiosIbge: string[] = [];
@@ -82,8 +98,9 @@ export const cadastroRouter = router({
    */
   enviarLinkAcesso: publicProcedure
     .input(z.object({ email: z.string().email("Digite um e-mail válido") }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const email = input.email.trim().toLowerCase();
+      await limitarEnvio(ctx.headers, email);
       const token = await assinarSessao(email, exigirSegredo(), Date.now(), VALIDADE_MAGIC_MS);
       const url = `${env.NEXT_PUBLIC_APP_URL}/verificar?token=${encodeURIComponent(token)}`;
       await enviarEmailBruto(

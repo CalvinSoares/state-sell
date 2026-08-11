@@ -1,22 +1,28 @@
 import "server-only";
 import {
+  alertasCriadosDesde,
   assinantesAtivosComPerfil,
   contratacoesCandidatas,
   criarAlertasPendentes,
+  paresAlertados,
 } from "@/src/server/db/repositorios/alerta.repo";
-import { aplicarTetoDiario, selecionarPara, type Selecao } from "./selecionar";
+import { distribuirTetoDiario, selecionarPara, type Selecao } from "./selecionar";
+
+const JANELA_TETO_MS = 24 * 60 * 60 * 1000;
 
 export type ResultadoAlertar = {
   assinantes: number;
   contratacoes: number;
   selecionados: number;
+  novos: number;
   criados: number;
   adiados: number;
 };
 
 /**
  * Decide quem recebe o quê e cria alertas pendentes. Não envia.
- * A seleção é pura (selecionar.ts); aqui é só orquestração de I/O.
+ * O teto diário desconta o que já foi criado nas últimas 24h e exclui pares já
+ * alertados, para o excedente eventualmente sair (auditoria #6).
  */
 export async function alertarJob(agora: () => Date = () => new Date()): Promise<ResultadoAlertar> {
   const momento = agora();
@@ -33,7 +39,12 @@ export async function alertarJob(agora: () => Date = () => new Date()): Promise<
     }
   }
 
-  const { enviarAgora, adiar } = aplicarTetoDiario(selecoes);
+  // Exclui o que já virou alerta (senão ocuparia as vagas do teto à toa).
+  const jaAlertado = await paresAlertados(perfis.map((p) => p.assinanteId));
+  const novas = selecoes.filter((s) => !jaAlertado.has(`${s.assinanteId}:${s.contratacaoId}`));
+
+  const criados24h = await alertasCriadosDesde(new Date(momento.getTime() - JANELA_TETO_MS));
+  const { enviarAgora, adiar } = distribuirTetoDiario(novas, criados24h);
 
   const criados = await criarAlertasPendentes(
     enviarAgora.map((s) => ({
@@ -48,6 +59,7 @@ export async function alertarJob(agora: () => Date = () => new Date()): Promise<
     assinantes: perfis.length,
     contratacoes: candidatas.length,
     selecionados: selecoes.length,
+    novos: novas.length,
     criados,
     adiados: adiar.length,
   };

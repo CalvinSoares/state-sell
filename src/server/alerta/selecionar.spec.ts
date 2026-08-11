@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  aplicarTetoDiario,
+  distribuirTetoDiario,
   escolherItemPrincipal,
   selecionarPara,
   type ContratacaoParaSelecao,
@@ -127,7 +127,7 @@ describe("escolherItemPrincipal", () => {
   });
 });
 
-describe("aplicarTetoDiario", () => {
+describe("distribuirTetoDiario", () => {
   function sel(over: Partial<Selecao>): Selecao {
     return {
       assinanteId: "a1",
@@ -141,13 +141,27 @@ describe("aplicarTetoDiario", () => {
     };
   }
 
-  it("no máximo 5 por assinante nesta leva; resto é adiado", () => {
+  it("no máximo 5 por assinante quando nada foi criado nas últimas 24h", () => {
     const selecoes = Array.from({ length: 8 }, (_, i) =>
       sel({ contratacaoId: `c${i}`, prioridade: i }),
     );
-    const { enviarAgora, adiar } = aplicarTetoDiario(selecoes);
+    const { enviarAgora, adiar } = distribuirTetoDiario(selecoes, new Map());
     expect(enviarAgora).toHaveLength(5);
     expect(adiar).toHaveLength(3);
+  });
+
+  it("desconta o que já foi criado nas últimas 24h (o excedente eventualmente sai)", () => {
+    const selecoes = Array.from({ length: 4 }, (_, i) => sel({ contratacaoId: `c${i}`, prioridade: i }));
+    // já criou 3 nas últimas 24h → só cabem mais 2
+    const { enviarAgora, adiar } = distribuirTetoDiario(selecoes, new Map([["a1", 3]]));
+    expect(enviarAgora).toHaveLength(2);
+    expect(adiar).toHaveLength(2);
+  });
+
+  it("assinante que já bateu o teto nas 24h não recebe nada agora", () => {
+    const selecoes = [sel({ contratacaoId: "x" })];
+    const { enviarAgora } = distribuirTetoDiario(selecoes, new Map([["a1", 5]]));
+    expect(enviarAgora).toHaveLength(0);
   });
 
   it("envia os de maior prioridade (menor número) primeiro", () => {
@@ -155,7 +169,7 @@ describe("aplicarTetoDiario", () => {
       sel({ contratacaoId: "baixa", prioridade: 900 }),
       sel({ contratacaoId: "alta", prioridade: 10 }),
     ];
-    const { enviarAgora } = aplicarTetoDiario(selecoes);
+    const { enviarAgora } = distribuirTetoDiario(selecoes, new Map());
     expect(enviarAgora[0]!.contratacaoId).toBe("alta");
   });
 
@@ -164,7 +178,7 @@ describe("aplicarTetoDiario", () => {
       ...Array.from({ length: 6 }, (_, i) => sel({ assinanteId: "a", contratacaoId: `a${i}` })),
       ...Array.from({ length: 6 }, (_, i) => sel({ assinanteId: "b", contratacaoId: `b${i}` })),
     ];
-    const { enviarAgora } = aplicarTetoDiario(selecoes);
+    const { enviarAgora } = distribuirTetoDiario(selecoes, new Map());
     expect(enviarAgora.filter((s) => s.assinanteId === "a")).toHaveLength(5);
     expect(enviarAgora.filter((s) => s.assinanteId === "b")).toHaveLength(5);
   });

@@ -43,10 +43,14 @@ Rodada por agente lendo o código. **Corrigido:**
 - **E-mail duplicado sob concorrência** → reivindicação atômica `pendente→enviando` (`for update skip locked`).
 - **`/api/cron/tick` sem isolamento** → cada etapa em try/catch.
 
+**Corrigido depois (2ª leva):**
+
+- **Rate limit** nas procedures públicas de e-mail (`criar`, `enviarLinkAcesso`): janela fixa atômica no Postgres (tabela `rate_limit`), 10/h por IP e 3/h por e-mail. Sem infra extra. ✔
+- **Teto diário de alertas** agora desconta o que foi criado nas últimas 24h e exclui pares já alertados → o excedente eventualmente sai, em vez de ser descartado. ✔
+
 **Pendente (decisão de produto / fase futura):**
 
-- **Rate limit / CAPTCHA** nas procedures públicas de e-mail (`criar`, `enviarLinkAcesso`) — risco de mail-bombing. Precisa de Upstash ou similar. **Prioridade antes do lançamento público.**
-- **Teto diário de alertas descarta excedente** (`alertarJob`): o 6º+ alerta concorrente nunca sai enquanto os 5 primeiros seguem abertos. Redesenhar para contar enviados no dia.
+- **CAPTCHA** no cadastro (o rate limit já mitiga o mail-bombing; CAPTCHA endurece mais).
 - **Audiência de token** (admin/assinante/magic usam mesmo formato): adicionar claim `aud`.
 - **GET com efeito colateral** em `/verificar` e `/feedback`: idealmente POST com confirmação de 1 clique.
 - **Magic link reutilizável na validade** (30 min, sem nonce de uso único).

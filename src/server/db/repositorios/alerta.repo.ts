@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, gt, inArray, isNull, sql } from "drizzle-orm";
+import { and, count, eq, gt, gte, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@/src/server/db";
 import {
   alerta,
@@ -120,6 +120,26 @@ export async function alertasDoAssinante(assinanteId: string, limite = 30) {
     .where(eq(alerta.assinanteId, assinanteId))
     .orderBy(sql`${alerta.criadoEm} desc`)
     .limit(limite);
+}
+
+/** Pares (assinante, contratação) que já têm alerta — para não recontá-los no teto. */
+export async function paresAlertados(assinanteIds: string[]): Promise<Set<string>> {
+  if (assinanteIds.length === 0) return new Set();
+  const linhas = await db
+    .select({ assinanteId: alerta.assinanteId, contratacaoId: alerta.contratacaoId })
+    .from(alerta)
+    .where(inArray(alerta.assinanteId, assinanteIds));
+  return new Set(linhas.map((l) => `${l.assinanteId}:${l.contratacaoId}`));
+}
+
+/** Quantos alertas cada assinante teve CRIADOS desde `desde` (janela do teto). */
+export async function alertasCriadosDesde(desde: Date): Promise<Map<string, number>> {
+  const linhas = await db
+    .select({ assinanteId: alerta.assinanteId, n: count() })
+    .from(alerta)
+    .where(gte(alerta.criadoEm, desde))
+    .groupBy(alerta.assinanteId);
+  return new Map(linhas.map((l) => [l.assinanteId, Number(l.n)]));
 }
 
 export type CriarAlertaInput = {
