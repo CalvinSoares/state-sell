@@ -22,7 +22,7 @@ export const VALIDADE_MAGIC_MS = 1000 * 60 * 30; // 30 min
  */
 export type Audiencia = "admin" | "assinante" | "magic";
 
-type Payload = { email: string; exp: number; aud: Audiencia };
+type Payload = { email: string; exp: number; aud: Audiencia; jti?: string };
 
 function base64url(bytes: Uint8Array): string {
   let bin = "";
@@ -56,12 +56,13 @@ export async function assinarSessao(
   email: string,
   segredo: string,
   agoraMs: number,
-  opts: { validadeMs?: number; aud?: Audiencia } = {},
+  opts: { validadeMs?: number; aud?: Audiencia; jti?: string } = {},
 ): Promise<string> {
   const payload: Payload = {
     email: email.toLowerCase(),
     exp: agoraMs + (opts.validadeMs ?? VALIDADE_MS),
     aud: opts.aud ?? "assinante",
+    ...(opts.jti ? { jti: opts.jti } : {}),
   };
   const corpo = base64url(new TextEncoder().encode(JSON.stringify(payload)));
   const chave = await chaveHmac(segredo);
@@ -71,16 +72,13 @@ export async function assinarSessao(
   return `${corpo}.${base64url(assinatura)}`;
 }
 
-/**
- * Verifica assinatura, expiração e audiência. Retorna o e-mail ou null.
- * `audEsperada` obrigatória: um token de outra audiência é rejeitado.
- */
-export async function verificarSessao(
+/** Valida assinatura, expiração e audiência; retorna o payload ou null. */
+async function lerPayload(
   token: string | undefined,
   segredo: string,
   agoraMs: number,
   audEsperada: Audiencia,
-): Promise<string | null> {
+): Promise<Payload | null> {
   if (!token) return null;
   const [corpo, assinatura] = token.split(".");
   if (!corpo || !assinatura) return null;
@@ -98,8 +96,33 @@ export async function verificarSessao(
     const payload = JSON.parse(new TextDecoder().decode(deBase64url(corpo))) as Payload;
     if (typeof payload.exp !== "number" || payload.exp < agoraMs) return null;
     if (payload.aud !== audEsperada) return null;
-    return payload.email;
+    return payload;
   } catch {
     return null;
   }
+}
+
+/**
+ * Verifica assinatura, expiração e audiência. Retorna o e-mail ou null.
+ * `audEsperada` obrigatória: um token de outra audiência é rejeitado.
+ */
+export async function verificarSessao(
+  token: string | undefined,
+  segredo: string,
+  agoraMs: number,
+  audEsperada: Audiencia,
+): Promise<string | null> {
+  const payload = await lerPayload(token, segredo, agoraMs, audEsperada);
+  return payload?.email ?? null;
+}
+
+/** Verifica um magic link (aud "magic") e devolve e-mail + jti (para uso único). */
+export async function verificarMagic(
+  token: string | undefined,
+  segredo: string,
+  agoraMs: number,
+): Promise<{ email: string; jti: string | null } | null> {
+  const payload = await lerPayload(token, segredo, agoraMs, "magic");
+  if (!payload) return null;
+  return { email: payload.email, jti: payload.jti ?? null };
 }

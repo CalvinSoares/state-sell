@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { env } from "@/src/env";
-import { assinarSessao, NOME_COOKIE_PUBLICO, verificarSessao } from "@/src/server/auth/sessao";
+import { assinarSessao, NOME_COOKIE_PUBLICO, verificarMagic } from "@/src/server/auth/sessao";
 import { ativarAssinante } from "@/src/server/db/repositorios/assinante.repo";
+import { consumirMagic } from "@/src/server/db/repositorios/magic.repo";
 
 /**
  * Magic link (confirmação de cadastro ou login). Verifica o token, ativa o
@@ -14,13 +15,17 @@ export async function GET(req: Request) {
   const novo = url.searchParams.get("novo") === "1";
   const base = env.NEXT_PUBLIC_APP_URL;
 
-  const email = env.AUTH_SECRET
-    ? await verificarSessao(token, env.AUTH_SECRET, Date.now(), "magic")
-    : null;
-  if (!email) {
+  const magic = env.AUTH_SECRET ? await verificarMagic(token, env.AUTH_SECRET, Date.now()) : null;
+  if (!magic) {
     return NextResponse.redirect(new URL("/entrar?erro=link", base), { status: 303 });
   }
 
+  // Uso único: o primeiro clique consome o jti; o segundo cai aqui e falha.
+  if (magic.jti && !(await consumirMagic(magic.jti))) {
+    return NextResponse.redirect(new URL("/entrar?erro=usado", base), { status: 303 });
+  }
+
+  const email = magic.email;
   await ativarAssinante(email);
 
   // Token do link é curto; a sessão do cookie é longa — emite uma nova.

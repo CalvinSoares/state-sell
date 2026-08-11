@@ -40,6 +40,35 @@ export async function assinantesAtivosComPerfil(): Promise<PerfilAssinante[]> {
   }));
 }
 
+/** Perfis ativos + e-mail, para o resumo semanal (evita 1 query de e-mail por assinante). */
+export async function perfisAtivosComEmail(): Promise<
+  { perfil: PerfilAssinante; email: string }[]
+> {
+  const linhas = await db
+    .select({
+      assinanteId: assinante.id,
+      email: assinante.email,
+      ramos: perfilBusca.ramos,
+      municipiosIbge: perfilBusca.municipiosIbge,
+      uf: perfilBusca.uf,
+      tetoValorCentavos: perfilBusca.tetoValorCentavos,
+    })
+    .from(assinante)
+    .innerJoin(perfilBusca, eq(perfilBusca.assinanteId, assinante.id))
+    .where(and(eq(assinante.status, "ativo"), eq(perfilBusca.ativo, true)));
+
+  return linhas.map((l) => ({
+    email: l.email,
+    perfil: {
+      assinanteId: l.assinanteId,
+      ramos: l.ramos,
+      municipiosIbge: l.municipiosIbge,
+      uf: l.uf,
+      tetoValorCentavos: l.tetoValorCentavos,
+    },
+  }));
+}
+
 /**
  * Contratações candidatas: divulgadas, com prazo aberto, que têm pelo menos um
  * item classificado num ramo de verdade acima do limiar. Traz os itens

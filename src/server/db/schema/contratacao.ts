@@ -39,6 +39,9 @@ export const contratacao = pgTable(
     index("idx_contratacao_uf").on(t.uf),
     index("idx_contratacao_ibge").on(t.codigoIbge),
     index("idx_contratacao_encerramento").on(t.dataEncerramentoProposta),
+    // coleta por região (resumo) e o caminho quente das candidatas
+    index("idx_contratacao_coletado").on(t.coletadoEm),
+    index("idx_contratacao_situacao_encerramento").on(t.situacaoCompraId, t.dataEncerramentoProposta),
   ],
 );
 

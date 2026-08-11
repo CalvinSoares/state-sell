@@ -48,15 +48,6 @@ export async function criarOuAtualizarAssinante(input: CriarAssinanteInput): Pro
   });
 }
 
-/** Confirma o e-mail (magic link) e ativa o assinante. */
-/** E-mail do assinante por id (para o resumo semanal). */
-export async function emailPorAssinante(assinanteId: string): Promise<string | null> {
-  const [l] = await db
-    .select({ email: assinante.email })
-    .from(assinante)
-    .where(eq(assinante.id, assinanteId));
-  return l?.email ?? null;
-}
 
 const CAMPOS_PAINEL = {
   id: assinante.id,

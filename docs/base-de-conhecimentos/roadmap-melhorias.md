@@ -53,12 +53,17 @@ Rodada por agente lendo o código. **Corrigido:**
 - **Audiência de token** (`aud`): admin, assinante e magic link agora têm claim de audiência; um token de uma audiência não vale para outra. ✔
 - **GET com efeito colateral no `/feedback`**: GET só mostra um botão; o registro é no POST → scanner de e-mail não polui os dados. ✔
 
+**Corrigido (4ª leva):**
+
+- **Magic link de uso único**: cada link carrega um `jti`; o 1º clique consome (tabela `magic_usado`), o 2º falha. Link vazado não reautentica. ✔
+- **N+1 do resumo semanal**: consultas agregadas ANTES do laço (perfis+e-mail, coletadas por região com `GROUP BY`, enviados por assinante, detalhes das aberturas em lote) — de ~4 queries por assinante para um punhado no total. ✔
+- **Índices** em `contratacao(coletado_em)` e `(situacao_compra_id, data_encerramento_proposta)` para o caminho quente das candidatas e do resumo. ✔
+
 **Pendente (decisão de produto / fase futura):**
 
 - **CAPTCHA** no cadastro (o rate limit já mitiga o mail-bombing; CAPTCHA endurece mais).
-- **`/verificar` continua GET** (magic link é clicado): ativação é idempotente e a sessão vai para quem clica, então o risco é baixo — mantido GET para não atritar o login.
-- **Magic link reutilizável na validade** (30 min, sem nonce de uso único).
-- **N+1 e carga sem limite** no resumo semanal e na seleção de candidatas (escala).
+- **`/verificar` continua GET** (magic link é clicado): ativação idempotente + uso único; risco baixo, mantido GET para não atritar o login.
+- **Seleção de candidatas em memória** (perfis × candidatas): ok e limitado no volume atual; reavaliar com pré-filtro por região no banco quando a escala pedir.
 
 ## Fase 3.2 — Ramos (parcial)
 

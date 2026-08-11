@@ -1,12 +1,12 @@
 import "server-only";
-import { municipioPorCodigo } from "@/src/server/ibge/municipios";
-import { assinantesAtivosComPerfil, contratacoesCandidatas } from "@/src/server/db/repositorios/alerta.repo";
+import { regiaoLabel } from "@/src/server/ibge/municipios";
+import { contratacoesCandidatas, perfisAtivosComEmail } from "@/src/server/db/repositorios/alerta.repo";
 import {
-  contarAlertasNaSemana,
-  contarContratacoesNaRegiao,
+  alertasEnviadosDesdePorAssinante,
+  contratacoesColetadasPorRegiao,
   detalhesContratacoes,
 } from "@/src/server/db/repositorios/resumo.repo";
-import { emailPorAssinante } from "@/src/server/db/repositorios/assinante.repo";
+import { log } from "@/src/server/log";
 import { RAMOS } from "@/content/ramos";
 import { comporResumo, type OportunidadeAberta } from "./compor-resumo";
 import { selecionarPara, type ContratacaoParaSelecao, type PerfilAssinante } from "./selecionar";
@@ -25,13 +25,16 @@ export type ResultadoResumo = {
   falhas: number;
 };
 
-/** Região em texto: cidade única ou "todo o estado de UF". */
-function regiaoLabel(p: PerfilAssinante): string {
-  if (p.municipiosIbge.length === 1) {
-    return municipioPorCodigo(p.municipiosIbge[0]!)?.nome ?? "sua região";
+/** Contratações lidas na região do perfil, a partir dos mapas agregados (sem N+1). */
+function lidasNaRegiao(
+  p: PerfilAssinante,
+  porIbge: Map<string, number>,
+  porUf: Map<string, number>,
+): number {
+  if (p.municipiosIbge.length > 0) {
+    return p.municipiosIbge.reduce((s, ibge) => s + (porIbge.get(ibge) ?? 0), 0);
   }
-  if (p.municipiosIbge.length > 1) return "suas cidades";
-  return p.uf ? `todo o estado de ${p.uf}` : "sua região";
+  return p.uf ? (porUf.get(p.uf) ?? 0) : 0;
 }
 
 /** Top-N contratações ainda abertas que servem para o assinante (não só as alertadas). */
@@ -40,37 +43,43 @@ function aberturasPara(
   p: PerfilAssinante,
   agora: Date,
 ): { contratacaoId: string; ramoSlug: string }[] {
-  const selecoes = candidatas
+  return candidatas
     .map((c) => selecionarPara(c, p, agora))
     .filter((s): s is NonNullable<typeof s> => s !== null)
     .sort((a, b) => a.prioridade - b.prioridade)
-    .slice(0, MAX_ABERTURAS);
-  return selecoes.map((s) => ({ contratacaoId: s.contratacaoId, ramoSlug: s.ramoSlug }));
+    .slice(0, MAX_ABERTURAS)
+    .map((s) => ({ contratacaoId: s.contratacaoId, ramoSlug: s.ramoSlug }));
 }
 
-/** Resumo de sábado. Vai para TODOS os ativos, inclusive quem não recebeu nada. */
+/**
+ * Resumo de sábado. Vai para TODOS os ativos, inclusive quem não recebeu nada.
+ * Consultas agregadas ANTES do laço (sem N+1): perfis+e-mail, coletadas por
+ * região, enviados por assinante e detalhes das aberturas — tudo em lote.
+ */
 export async function resumoSemanalJob(agora: () => number = Date.now): Promise<ResultadoResumo> {
   const hoje = new Date(agora());
   const desde = new Date(agora() - UMA_SEMANA_MS);
-  const perfis = await assinantesAtivosComPerfil();
-  const candidatas = await contratacoesCandidatas(hoje);
+
+  const [perfisComEmail, candidatas, regiao, enviadosPorAssinante] = await Promise.all([
+    perfisAtivosComEmail(),
+    contratacoesCandidatas(hoje),
+    contratacoesColetadasPorRegiao(desde),
+    alertasEnviadosDesdePorAssinante(desde),
+  ]);
+
+  // Aberturas de todos os assinantes, para buscar os detalhes numa query só.
+  const aberturasPorAssinante = perfisComEmail.map(({ perfil }) => aberturasPara(candidatas, perfil, hoje));
+  const todosIds = [...new Set(aberturasPorAssinante.flatMap((a) => a.map((x) => x.contratacaoId)))];
+  const detalhes = await detalhesContratacoes(todosIds);
+  const mapaCandidata = new Map(candidatas.map((c) => [c.contratacaoId, c]));
 
   const total: ResultadoResumo = { assinantes: 0, enviados: 0, simulados: 0, falhas: 0 };
 
-  for (const p of perfis) {
+  for (let i = 0; i < perfisComEmail.length; i++) {
+    const { perfil, email } = perfisComEmail[i]!;
     total.assinantes++;
-    const email = await emailPorAssinante(p.assinanteId);
-    if (!email) continue;
 
-    const [lidas, alertasSemana] = await Promise.all([
-      contarContratacoesNaRegiao(p, desde),
-      contarAlertasNaSemana(p.assinanteId, desde),
-    ]);
-
-    const idsAbertura = aberturasPara(candidatas, p, hoje);
-    const mapaCandidata = new Map(candidatas.map((c) => [c.contratacaoId, c]));
-    const detalhes = await detalhesContratacoes(idsAbertura.map((a) => a.contratacaoId));
-    const aberturas: OportunidadeAberta[] = idsAbertura
+    const aberturas: OportunidadeAberta[] = aberturasPorAssinante[i]!
       .map(({ contratacaoId, ramoSlug }) => {
         const c = mapaCandidata.get(contratacaoId);
         const d = detalhes.get(contratacaoId);
@@ -85,7 +94,12 @@ export async function resumoSemanalJob(agora: () => number = Date.now): Promise<
       .filter((a): a is OportunidadeAberta => a !== null);
 
     const resumo = comporResumo(
-      { regiaoLabel: regiaoLabel(p), contratacoesLidas: lidas, alertasNaSemana: alertasSemana, aberturas },
+      {
+        regiaoLabel: regiaoLabel(perfil.municipiosIbge, perfil.uf),
+        contratacoesLidas: lidasNaRegiao(perfil, regiao.porIbge, regiao.porUf),
+        alertasNaSemana: enviadosPorAssinante.get(perfil.assinanteId) ?? 0,
+        aberturas,
+      },
       hoje,
     );
 
@@ -98,7 +112,8 @@ export async function resumoSemanalJob(agora: () => number = Date.now): Promise<
       );
       if (r.simulado) total.simulados++;
       else if (r.enviado) total.enviados++;
-    } catch {
+    } catch (erro) {
+      log.error("resumo.falha_envio", { assinanteId: perfil.assinanteId });
       total.falhas++;
     }
   }

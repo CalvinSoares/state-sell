@@ -1,8 +1,7 @@
 import "server-only";
-import { and, count, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, count, eq, gte, inArray } from "drizzle-orm";
 import { db } from "@/src/server/db";
 import { alerta, contratacao } from "@/src/server/db/schema";
-import type { PerfilAssinante } from "@/src/server/alerta/selecionar";
 
 /** Órgão + município por id de contratação, para o texto das aberturas do resumo. */
 export async function detalhesContratacoes(
@@ -21,39 +20,37 @@ export async function detalhesContratacoes(
 }
 
 /**
- * Quantas contratações foram COLETADAS na região do perfil desde `desde`.
- * "Prova de trabalho" do resumo — mostra que o robô rodou, não que casaram.
+ * Contratações coletadas desde `desde`, agrupadas por município e por UF —
+ * DUAS queries no total, em vez de uma por assinante (evita N+1 no resumo).
+ * O job soma em memória conforme a região de cada perfil. Ver auditoria #13/#14.
  */
-export async function contarContratacoesNaRegiao(
-  p: PerfilAssinante,
+export async function contratacoesColetadasPorRegiao(
   desde: Date,
-): Promise<number> {
-  const filtroGeo =
-    p.municipiosIbge.length > 0
-      ? inArray(contratacao.codigoIbge, p.municipiosIbge)
-      : p.uf
-        ? eq(contratacao.uf, p.uf)
-        : sql`false`;
-
-  const [linha] = await db
-    .select({ n: count() })
+): Promise<{ porIbge: Map<string, number>; porUf: Map<string, number> }> {
+  const porIbgeLinhas = await db
+    .select({ chave: contratacao.codigoIbge, n: count() })
     .from(contratacao)
-    .where(and(gte(contratacao.coletadoEm, desde), filtroGeo));
+    .where(gte(contratacao.coletadoEm, desde))
+    .groupBy(contratacao.codigoIbge);
 
-  return linha?.n ?? 0;
+  const porUfLinhas = await db
+    .select({ chave: contratacao.uf, n: count() })
+    .from(contratacao)
+    .where(gte(contratacao.coletadoEm, desde))
+    .groupBy(contratacao.uf);
+
+  return {
+    porIbge: new Map(porIbgeLinhas.map((l) => [l.chave, Number(l.n)])),
+    porUf: new Map(porUfLinhas.map((l) => [l.chave, Number(l.n)])),
+  };
 }
 
-/** Quantos alertas foram enviados ao assinante desde `desde`. */
-export async function contarAlertasNaSemana(assinanteId: string, desde: Date): Promise<number> {
-  const [linha] = await db
-    .select({ n: count() })
+/** Alertas enviados desde `desde`, por assinante (uma query, não uma por assinante). */
+export async function alertasEnviadosDesdePorAssinante(desde: Date): Promise<Map<string, number>> {
+  const linhas = await db
+    .select({ assinanteId: alerta.assinanteId, n: count() })
     .from(alerta)
-    .where(
-      and(
-        eq(alerta.assinanteId, assinanteId),
-        eq(alerta.status, "enviado"),
-        gte(alerta.enviadoEm, desde),
-      ),
-    );
-  return linha?.n ?? 0;
+    .where(and(eq(alerta.status, "enviado"), gte(alerta.enviadoEm, desde)))
+    .groupBy(alerta.assinanteId);
+  return new Map(linhas.map((l) => [l.assinanteId, Number(l.n)]));
 }
