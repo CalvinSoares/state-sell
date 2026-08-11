@@ -2,8 +2,10 @@ import "server-only";
 import { and, count, eq } from "drizzle-orm";
 import { db } from "@/src/server/db";
 import {
+  alerta,
   classificacaoItem,
   contratacao,
+  feedbackAlerta,
   itemContratacao,
   rotuloManual,
 } from "@/src/server/db/schema";
@@ -72,8 +74,18 @@ export async function candidatosParaRotular(
 
 /** Hashes de texto de itens que geraram feedback negativo de assinante. */
 async function hashesComFeedbackNegativo(): Promise<Set<string>> {
-  // v1: feedback ainda não está ligado ao item; retorna vazio até a Fase 2.
-  return new Set<string>();
+  const linhas = await db
+    .select({
+      descricao: itemContratacao.descricao,
+      objeto: contratacao.objetoCompra,
+    })
+    .from(feedbackAlerta)
+    .innerJoin(alerta, eq(alerta.id, feedbackAlerta.alertaId))
+    .innerJoin(itemContratacao, eq(itemContratacao.id, alerta.itemIdPrincipal))
+    .innerJoin(contratacao, eq(contratacao.id, alerta.contratacaoId))
+    .where(eq(feedbackAlerta.util, false));
+
+  return new Set(linhas.map((l) => hashTexto(l.descricao, l.objeto)));
 }
 
 export type SalvarRotuloInput = {

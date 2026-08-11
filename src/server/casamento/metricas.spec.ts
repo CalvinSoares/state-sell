@@ -28,13 +28,20 @@ describe("métricas do casamento", () => {
     });
   }
 
-  // Recall é só relatório — não trava.
-  it("relatório de recall (não trava o CI)", () => {
+  // Relatório por origem — não trava. Mostra precisão geral e a da amostra
+  // aleatória (a que vale como gate) lado a lado, mais o recall.
+  it("relatório por origem (não trava o CI)", () => {
     const linhas = RAMOS.map((ramo) => {
-      const m = avaliarRamo(ramo, [...RAMOS], rotulados);
-      return `${ramo.slug.padEnd(20)} precisão=${m.precisao.toFixed(2)} recall=${m.recall.toFixed(2)} (fp=${m.falsosPositivos} fn=${m.falsosNegativos})`;
+      const geral = avaliarRamo(ramo, [...RAMOS], rotulados);
+      const aleat = avaliarRamo(ramo, [...RAMOS], rotulados, { apenasAmostraAleatoria: true });
+      return (
+        `${ramo.slug.padEnd(20)} ` +
+        `precisão(geral)=${geral.precisao.toFixed(2)} ` +
+        `precisão(aleatória)=${aleat.precisao.toFixed(2)} ` +
+        `recall=${geral.recall.toFixed(2)} ` +
+        `(fp=${geral.falsosPositivos} fn=${geral.falsosNegativos})`
+      );
     });
-    // Relatório de recall — escrito direto no stdout (sem console.*).
     process.stdout.write("\n" + linhas.join("\n") + "\n");
     expect(true).toBe(true);
   });

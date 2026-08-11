@@ -2,6 +2,7 @@ import "server-only";
 import { env } from "@/src/env";
 import { RAMOS_POR_SLUG } from "@/content/ramos";
 import { log } from "@/src/server/log";
+import { assinarValor } from "@/src/server/auth/token";
 import {
   alertasPendentes,
   marcarEnviado,
@@ -9,6 +10,14 @@ import {
 } from "@/src/server/db/repositorios/alerta.repo";
 import { comporEmail } from "./compor";
 import { enviarEmailAlerta } from "./enviar.action";
+
+const VALIDADE_FEEDBACK_MS = 90 * 24 * 60 * 60 * 1000; // 90 dias
+
+async function urlNaoEraPraMim(alertaId: string, agoraMs: number): Promise<string | undefined> {
+  if (!env.AUTH_SECRET) return undefined;
+  const token = await assinarValor(alertaId, env.AUTH_SECRET, agoraMs, VALIDADE_FEEDBACK_MS);
+  return `${env.NEXT_PUBLIC_APP_URL}/feedback?a=${alertaId}&t=${encodeURIComponent(token)}`;
+}
 
 export type ResultadoEnviar = { pendentes: number; enviados: number; simulados: number; falhas: number };
 
@@ -49,6 +58,7 @@ export async function enviarJob(agora: () => Date = () => new Date()): Promise<R
       p.termosCasados ?? [],
       env.NEXT_PUBLIC_APP_URL,
       momento,
+      await urlNaoEraPraMim(p.alertaId, momento.getTime()),
     );
 
     try {

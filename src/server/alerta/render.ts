@@ -18,6 +18,7 @@ export function renderTexto(e: EmailAlerta): string {
     `Como enviar minha proposta: ${e.comoParticiparUrl}`,
     "",
     e.porque,
+    ...(e.naoEraPraMimUrl ? ["", `Não era pra mim: ${e.naoEraPraMimUrl}`] : []),
   ];
   return partes.join("\n");
 }
@@ -39,6 +40,11 @@ export function renderHtml(e: EmailAlerta): string {
     </p>
     <hr style="border:0;border-top:1px solid #e7e4dc;margin:1.5rem 0" />
     <p style="color:#6b6a63;font-size:.85rem">${escapar(e.porque)}</p>
+    ${
+      e.naoEraPraMimUrl
+        ? `<p style="color:#6b6a63;font-size:.8rem;margin-top:.5rem"><a href="${escapar(e.naoEraPraMimUrl)}" style="color:#6b6a63">Não era pra mim</a></p>`
+        : ""
+    }
   </body></html>`;
 }
 

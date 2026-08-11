@@ -23,7 +23,10 @@ export async function enviarEmailBruto(
   const decisao = decidirEnvio(env.NODE_ENV, env.RESEND_MODE, Boolean(env.RESEND_API_KEY));
 
   if (!decisao.enviarDeVerdade) {
-    log.info("email.simulado", { motivo: decisao.motivo, assunto });
+    // Em dev, expõe o link do corpo no log para testar magic link/acesso sem e-mail.
+    const link =
+      env.NODE_ENV === "development" ? (texto.match(/https?:\/\/\S+/)?.[0] ?? null) : null;
+    log.info("email.simulado", { motivo: decisao.motivo, assunto, ...(link ? { link } : {}) });
     return { enviado: false, simulado: true, resendId: null };
   }
 

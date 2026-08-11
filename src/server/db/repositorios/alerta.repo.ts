@@ -6,6 +6,7 @@ import {
   assinante,
   classificacaoItem,
   contratacao,
+  feedbackAlerta,
   itemContratacao,
   perfilBusca,
 } from "@/src/server/db/schema";
@@ -188,6 +189,11 @@ export async function marcarEnviado(alertaId: string, resendId: string | null, e
     .update(alerta)
     .set({ status: "enviado", enviadoEm, resendId })
     .where(and(eq(alerta.id, alertaId), isNull(alerta.enviadoEm)));
+}
+
+/** Registra feedback de um alerta (util=false = "não era pra mim"). Idempotente-ish. */
+export async function registrarFeedback(alertaId: string, util: boolean, motivo?: string) {
+  await db.insert(feedbackAlerta).values({ alertaId, util, motivo });
 }
 
 export async function marcarFalhou(alertaId: string, motivo: string) {

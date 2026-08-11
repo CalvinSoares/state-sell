@@ -24,6 +24,7 @@ export default async function AdminHome() {
               padding: "1.1rem",
               textDecoration: "none",
               color: "var(--tinta)",
+              background: "var(--cartao)",
             }}
           >
             <strong>{c.titulo}</strong>

@@ -16,6 +16,8 @@ export function useRotular() {
 
   const [indice, setIndice] = useState(0);
   const [historico, setHistorico] = useState<number[]>([]);
+  // palpite revelado para o item atual (modo cego é o padrão)
+  const [palpite, setPalpite] = useState<{ ramo: string | null; score: number; termos: string[] } | null>(null);
 
   const { mutate: salvar, isPending } = api.admin.rotular.salvar.useMutation({
     onSuccess: () => {
@@ -35,6 +37,21 @@ export function useRotular() {
     }
   }, [indice, lista.length, isLoading, refetch]);
 
+  // Ao trocar de item, esconde o palpite de novo (volta ao modo cego).
+  useEffect(() => {
+    setPalpite(null);
+  }, [indice]);
+
+  const verPalpite = useCallback(async () => {
+    if (!atual) return;
+    const p = await utils.admin.rotular.palpite.fetch({
+      descricaoItem: atual.descricaoItem,
+      objetoCompra: atual.objetoCompra,
+      unidadeMedida: atual.unidadeMedida,
+    });
+    setPalpite(p);
+  }, [atual, utils]);
+
   const rotularAtual = useCallback(
     (ramoEsperado: string | null) => {
       if (!atual) return;
@@ -43,12 +60,12 @@ export function useRotular() {
         objetoCompra: atual.objetoCompra,
         ramoEsperado,
         origemAmostra: atual.origemAmostra,
-        viuPalpite: false,
+        viuPalpite: palpite !== null, // registra se o operador revelou o palpite
       });
       setHistorico((h) => [...h, indice]);
       setIndice((i) => i + 1);
     },
-    [atual, indice, salvar],
+    [atual, indice, salvar, palpite],
   );
 
   const pular = useCallback(() => {
@@ -79,6 +96,8 @@ export function useRotular() {
     progresso: progresso ?? [],
     totalRotulados,
     podeDesfazer: historico.length > 0,
+    palpite,
+    verPalpite,
     rotularAtual,
     pular,
     desfazer,

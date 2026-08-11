@@ -54,7 +54,7 @@ export function Rotulador({ ramos }: { ramos: RamoOpcao[] }) {
           borderRadius: 14,
           padding: "1.5rem",
           marginTop: "1rem",
-          background: "#fff",
+          background: "var(--cartao)",
         }}
       >
         <span
@@ -80,6 +80,39 @@ export function Rotulador({ ramos }: { ramos: RamoOpcao[] }) {
           {item.municipioNome}
           {item.unidadeMedida ? ` · unidade: ${item.unidadeMedida}` : ""}
         </p>
+
+        {r.palpite === null ? (
+          <button
+            type="button"
+            onClick={r.verPalpite}
+            style={{
+              marginTop: "1rem",
+              border: "1px dashed var(--borda)",
+              background: "transparent",
+              color: "var(--suave)",
+              borderRadius: 8,
+              padding: ".4rem .7rem",
+              cursor: "pointer",
+              fontSize: ".8rem",
+            }}
+          >
+            ver o palpite do robô (enviesa — fica registrado)
+          </button>
+        ) : (
+          <p
+            style={{
+              marginTop: "1rem",
+              padding: ".6rem .8rem",
+              borderRadius: 8,
+              background: "var(--acento-suave)",
+              fontSize: ".85rem",
+            }}
+          >
+            Palpite: <strong>{r.palpite.ramo ?? "nenhum ramo"}</strong>
+            {r.palpite.ramo ? ` (score ${r.palpite.score.toFixed(2)})` : ""}
+            {r.palpite.termos.length ? ` · termos: ${r.palpite.termos.slice(0, 4).join(", ")}` : ""}
+          </p>
+        )}
       </section>
 
       <div
@@ -160,7 +193,7 @@ function Botao({
     variante === "acento"
       ? { background: "var(--acento)", color: "#fff", border: "1px solid var(--acento)" }
       : variante === "neutro"
-        ? { background: "#f0efe9", color: "var(--tinta)", border: "1px solid var(--borda)" }
+        ? { background: "var(--acento-suave)", color: "var(--tinta)", border: "1px solid var(--borda)" }
         : { background: "transparent", color: "var(--suave)", border: "1px solid var(--borda)" };
   return (
     <button

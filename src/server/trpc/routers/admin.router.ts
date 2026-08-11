@@ -2,6 +2,7 @@ import { z } from "zod";
 import { VERSAO_CATALOGO } from "@/src/shared/types/ramo";
 import { RAMOS } from "@/content/ramos";
 import { montarFila } from "@/src/server/rotulagem/fila";
+import { melhorRamo } from "@/src/server/casamento/casar";
 import {
   candidatosParaRotular,
   progressoRotulagem,
@@ -30,6 +31,32 @@ export const adminRouter = router({
           municipioNome: f.municipioNome,
           origemAmostra: f.origemAmostra,
         }));
+      }),
+
+    /**
+     * Palpite do robô para UM item, sob demanda. Fica fora de `proximos` de
+     * propósito: o modo cego não pode nem trafegar o palpite. Revelar é ato
+     * deliberado do operador (registrado em viu_palpite no salvar).
+     */
+    palpite: adminProcedure
+      .input(
+        z.object({
+          descricaoItem: z.string(),
+          objetoCompra: z.string(),
+          unidadeMedida: z.string().nullable().optional(),
+        }),
+      )
+      .query(({ input }) => {
+        const m = melhorRamo(
+          {
+            descricaoItem: input.descricaoItem,
+            objetoCompra: input.objetoCompra,
+            unidadeMedida: input.unidadeMedida ?? undefined,
+          },
+          RAMOS,
+        );
+        if (!m) return { ramo: null as string | null, score: 0, termos: [] as string[] };
+        return { ramo: m.ramo, score: m.score, termos: m.termosCasados };
       }),
 
     salvar: adminProcedure
