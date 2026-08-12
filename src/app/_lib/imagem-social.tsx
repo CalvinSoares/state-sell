@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { SITE } from "@/src/shared/config/site";
 
-export const ogAlt = `${SITE.nome} — avisa quando a prefeitura quer comprar o que você vende`;
+export const ogAlt = `${SITE.nome} — e-mail quando a prefeitura quer comprar o que você vende`;
 export const ogSize = { width: 1200, height: 630 };
 export const ogContentType = "image/png";
 
@@ -57,7 +57,7 @@ export function gerarImagemSocial() {
             A prefeitura da sua cidade quer comprar o que você vende.
           </div>
           <div style={{ fontSize: 28, color: "#5f5e57", lineHeight: 1.35, maxWidth: 860 }}>
-            A gente avisa quando aparecer algo que serve. Você vai saber; disputar é com você.
+            A gente manda e-mail quando sair algo do seu ramo. Quem disputa é você.
           </div>
         </div>
 

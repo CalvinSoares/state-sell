@@ -6,14 +6,14 @@ import { Container } from "@/src/shared/components/ui";
 import { FormularioCadastro } from "./_components/FormularioCadastro";
 
 export const metadata: Metadata = {
-  title: "Começar a ser avisado",
+  title: "Quero ser avisado",
   description:
-    "Em dois minutos você diz o que vende e onde. A gente passa a olhar as compras das prefeituras por você.",
+    "Diz o que você vende e onde. Quando a prefeitura publicar algo do seu ramo, o e-mail chega.",
   alternates: { canonical: "/cadastro" },
   openGraph: {
-    title: "Começar a ser avisado",
+    title: "Quero ser avisado",
     description:
-      "Em dois minutos você diz o que vende e onde. A gente passa a olhar as compras das prefeituras por você.",
+      "Diz o que você vende e onde. Quando a prefeitura publicar algo do seu ramo, o e-mail chega.",
     url: "/cadastro",
   },
 };
@@ -31,11 +31,10 @@ export default function CadastroPage() {
       <Container size="md">
         <p className="text-sm font-extrabold uppercase tracking-wide text-acento">Prefeitura Quer</p>
         <h1 className="mt-1 text-3xl font-extrabold tracking-tight">
-          Dois minutos e a gente começa a olhar por você
+          Diz o que você vende e a gente avisa
         </h1>
         <p className="mb-10 mt-2 text-suave">
-          Três perguntas. Sem jargão. A promessa é: você vai saber quando a prefeitura quiser comprar
-          o que você vende.
+          Três perguntas. Sem jargão. Quando sair compra do seu ramo na sua região, o e-mail chega.
         </p>
         <FormularioCadastro ramos={ramos} faixas={faixas} ufs={[...UFS]} />
       </Container>

@@ -9,7 +9,12 @@ import {
 import { log } from "@/src/server/log";
 import { RAMOS } from "@/content/ramos";
 import { comporResumo, type OportunidadeAberta } from "./compor-resumo";
-import { selecionarPara, type ContratacaoParaSelecao, type PerfilAssinante } from "./selecionar";
+import {
+  contratacaoNaRegiao,
+  selecionarPara,
+  type ContratacaoParaSelecao,
+  type PerfilAssinante,
+} from "./selecionar";
 import { enviarEmailBruto } from "./enviar.action";
 import { renderResumoHtml, renderResumoTexto } from "./render";
 
@@ -93,10 +98,13 @@ export async function resumoSemanalJob(agora: () => number = Date.now): Promise<
       })
       .filter((a): a is OportunidadeAberta => a !== null);
 
+    const abertasNaRegiao = candidatas.filter((c) => contratacaoNaRegiao(c, perfil)).length;
+
     const resumo = comporResumo(
       {
         regiaoLabel: regiaoLabel(perfil.municipiosIbge, perfil.uf),
         contratacoesLidas: lidasNaRegiao(perfil, regiao.porIbge, regiao.porUf),
+        abertasNaRegiao,
         alertasNaSemana: enviadosPorAssinante.get(perfil.assinanteId) ?? 0,
         aberturas,
       },

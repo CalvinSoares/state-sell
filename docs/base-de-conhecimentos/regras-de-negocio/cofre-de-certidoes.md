@@ -79,3 +79,10 @@ Conteúdo estático, em português, sem opinião jurídica:
 **Vercel Blob (store privado).** Pathname em `certidao.arquivo_chave`; leitura só via
 `GET /api/certidoes/[id]/arquivo` com sessão do assinante (`get()` no servidor).
 Excluir certidão ou “Tirar PDF” apaga o blob de verdade. Env: na Vercel `BLOB_STORE_ID` (OIDC); no local `BLOB_READ_WRITE_TOKEN`.
+
+## Amarrado ao alerta
+
+Quando um e-mail de alerta (ou lembrete D-1) sai e a pessoa tem certidão com
+vencimento em ≤15 dias (ou já vencida pela data informada), o corpo do e-mail
+ganha uma linha: *“Renove antes de disputar”* + link para `/certidoes`. O cofre
+deixa de ser gaveta.

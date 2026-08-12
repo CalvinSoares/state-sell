@@ -62,15 +62,14 @@ export default function LandingPage() {
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-suave">
             Todo dia prefeituras compram marmita, impressão, limpeza, conserto. Por lei, boa parte
-            dessas compras é reservada para o negócio pequeno. A gente lê os anúncios por você e
-            avisa quando aparecer algo que serve.{" "}
-            <strong className="text-tinta">Você vai saber; disputar é com você.</strong>
+            disso é reservada pra micro e pequena empresa. A gente lê esses anúncios e manda e-mail
+            quando sair algo do que você vende. Quem manda a proposta é você.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <LinkButton href="/cadastro" tamanho="lg">
               Quero ser avisado
             </LinkButton>
-            <span className="text-sm text-suave">Leva 2 minutos. Sem cartão. Sem juridiquês.</span>
+            <span className="text-sm text-suave">Uns 2 minutos. Sem cartão.</span>
           </div>
         </Container>
       </section>
@@ -81,20 +80,18 @@ export default function LandingPage() {
         <h2 className="mt-16 text-2xl font-bold">Como funciona</h2>
         <ol className="mt-5 grid gap-4 md:grid-cols-3">
           <Passo n={1} titulo="Você diz o que vende e onde">
-            Três perguntas em português: o que você faz, sua cidade (ou o estado inteiro) e o maior
-            pedido que você dá conta.
+            O que você faz, sua cidade (ou o estado inteiro) e o maior pedido que você dá conta.
           </Passo>
-          <Passo n={2} titulo="A gente vigia os anúncios por você">
-            Várias vezes ao dia lemos as compras que as prefeituras publicam e separamos as que
-            combinam com o seu negócio.
+          <Passo n={2} titulo="A gente lê o que as prefeituras publicam">
+            Pegamos as compras novas e separamos as que batem com o seu ramo e o seu tamanho.
           </Passo>
           <Passo n={3} titulo="Chega um e-mail quando serve">
-            Curto, decidível em trinta segundos: o que querem comprar, quanto, e até quando você pode
-            mandar seu preço.
+            O que querem comprar, quanto, e até quando dá pra mandar o preço — sem PDF e sem
+            juridiquês.
           </Passo>
         </ol>
 
-        <h2 className="mt-16 text-2xl font-bold">Alguns do que a gente já acompanha</h2>
+        <h2 className="mt-16 text-2xl font-bold">Ramos que a gente acompanha</h2>
         <ul className="mt-4 flex flex-wrap gap-2">
           {RAMOS.map((r) => (
             <li key={r.slug}>
@@ -105,15 +102,14 @@ export default function LandingPage() {
 
         <Card className="mt-10 border-l-4 border-l-acento">
           <p className="m-0">
-            <strong>Para ser honesto:</strong> a gente te mostra a oportunidade — quem disputa e
-            vence é você. Tem semana que não aparece nada, e tudo bem: no sábado mandamos um resumo
-            para você saber que o serviço está de olho.
+            A gente só avisa. Quem manda a proposta — e quem ganha ou perde — é você. Tem semana sem
+            nada; no sábado mandamos um resumo do que rolou na sua região.
           </p>
         </Card>
 
         <div className="mt-12 text-center">
           <LinkButton href="/cadastro" tamanho="lg">
-            Começar agora
+            Quero ser avisado
           </LinkButton>
         </div>
 
@@ -151,11 +147,15 @@ function ExemploEmail() {
       <div className="p-5">
         <p className="m-0 text-lg font-bold">A Prefeitura de Sorocaba quer comprar marmita.</p>
         <p className="mt-2">400 refeições por mês, para a escola do Jardim Paulista.</p>
-        <p className="mt-0.5 text-suave">Valor estimado: por volta de R$ 38 mil no ano.</p>
-        <p className="mt-2">
-          <Badge tom="acento">Exclusivo para micro e pequena empresa</Badge>
-        </p>
-        <div className="mt-3 rounded-lg bg-acento-suave px-3.5 py-3 font-semibold text-acento-forte">
+        <div className="mt-3 rounded-lg bg-acento-suave px-3.5 py-3 text-sm">
+          <p className="m-0 font-extrabold text-acento-forte">Vale a pena olhar?</p>
+          <ul className="mt-1.5 list-none space-y-1 p-0 text-acento-forte">
+            <li>✓ Reservado para micro e pequena empresa</li>
+            <li>✓ Prazo: faltam 3 dias</li>
+            <li>✓ Cabe na sua faixa (por volta de R$ 38 mil)</li>
+          </ul>
+        </div>
+        <div className="mt-3 rounded-lg border border-borda px-3.5 py-3 font-semibold">
           Prazo para proposta: quinta, 14/08 às 9h — faltam 3 dias.
         </div>
       </div>

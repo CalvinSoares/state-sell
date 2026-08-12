@@ -3,7 +3,13 @@
  * Zero jargão. Ver docs/base-de-conhecimentos/regras-de-negocio/alertas-e-envio.md
  */
 import { prazoTexto } from "@/src/shared/utils/data";
-import { quantidadeTexto, valorAproximado } from "@/src/shared/utils/formatador";
+import { quantidadeTexto } from "@/src/shared/utils/formatador";
+import {
+  avisoCertidaoNoAlerta,
+  sinaisValeOlhar,
+  type CertidaoParaAviso,
+  type Sinal,
+} from "./sinais";
 
 export type DadosContratacao = {
   orgaoRazaoSocial: string;
@@ -28,7 +34,12 @@ export type EmailAlerta = {
   /** título humano: "A Prefeitura de Sorocaba quer comprar marmita." */
   titulo: string;
   linhas: string[];
+  /** Três sinais para decisão em ~10s. */
+  sinais: Sinal[];
   avisoEscala: string | null;
+  /** Certidão do cofre vencendo / vencida — amarrada ao alerta. */
+  avisoCertidao: string | null;
+  certidoesUrl: string | null;
   prazo: string;
   verEditalUrl: string;
   comoParticiparUrl: string;
@@ -86,6 +97,16 @@ function nomeCurtoDoItem(descricao: string): string {
   return semAtributos.trim().toLowerCase();
 }
 
+export type OpcoesComporEmail = {
+  naoEraPraMimUrl?: string;
+  descadastrarUrl?: string;
+  lembrete?: boolean;
+  /** Teto do perfil (centavos). null = sem teto / "acima disso". */
+  tetoValorCentavos?: bigint | null;
+  /** Certidões do cofre — para aviso amarrado ao alerta. */
+  certidoes?: CertidaoParaAviso[];
+};
+
 export function comporEmail(
   c: DadosContratacao,
   item: DadosItemPrincipal,
@@ -93,10 +114,16 @@ export function comporEmail(
   termosCasados: string[],
   appUrl: string,
   agora: Date,
-  naoEraPraMimUrl?: string,
-  descadastrarUrl?: string,
-  lembrete = false,
+  opcoes: OpcoesComporEmail = {},
 ): EmailAlerta {
+  const {
+    naoEraPraMimUrl,
+    descadastrarUrl,
+    lembrete = false,
+    tetoValorCentavos = null,
+    certidoes = [],
+  } = opcoes;
+
   const prazo = prazoTexto(c.dataEncerramentoProposta, agora);
   const diaSemana = prazo.split(",")[0];
   const linkEdital = linkDoEdital(c.linkSistemaOrigem, c.numeroControlePncp);
@@ -111,11 +138,16 @@ export function comporEmail(
     linhas.push(`${capitalizar(nomeCurtoDoItem(item.descricao))}, ${paraOnde}.`);
   }
 
-  const valor = valorAproximado(c.valorTotalEstimadoCentavos);
-  if (valor) linhas.push(`Valor estimado: ${valor}.`);
+  // Valor e exclusividade vão no bloco "Vale a pena olhar?" — decisão em 10s.
+  const sinais = sinaisValeOlhar({
+    exclusivoMeEpp: item.exclusivoMeEpp,
+    dataEncerramentoProposta: c.dataEncerramentoProposta,
+    valorTotalEstimadoCentavos: c.valorTotalEstimadoCentavos,
+    tetoValorCentavos,
+    agora,
+  });
 
-  // Só afirma exclusividade se o DADO diz isso (tipoBeneficio), nunca por valor.
-  if (item.exclusivoMeEpp) linhas.push("Exclusivo para micro e pequena empresa.");
+  const avisoCertidao = avisoCertidaoNoAlerta(certidoes, agora);
 
   const orgao = orgaoHumano(c.orgaoRazaoSocial, c.municipioNome);
   const ramo = ramoRotuloCurto(ramoRotulo);
@@ -129,9 +161,12 @@ export function comporEmail(
       : `${orgao} quer comprar ${ramo} — prazo até ${diaSemana}`,
     titulo,
     linhas,
+    sinais,
     avisoEscala: item.escala
       ? "Atenção: esse pedido pede estrutura grande. Confira se você dá conta antes de participar."
       : null,
+    avisoCertidao,
+    certidoesUrl: avisoCertidao ? `${appUrl}/certidoes` : null,
     prazo: `Prazo para proposta: ${prazo}.`,
     verEditalUrl: linkEdital,
     comoParticiparUrl: `${appUrl}/trilha`,

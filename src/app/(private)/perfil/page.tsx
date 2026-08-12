@@ -35,9 +35,11 @@ export default async function PerfilPage() {
     <main className="py-12">
       <Container size="sm">
         <p className="m-0 text-suave">{email}</p>
-        <h1 className="mt-1 text-2xl font-extrabold tracking-tight">Mudar o que a gente olha</h1>
+        <h1 className="mt-1 text-2xl font-extrabold tracking-tight">
+          Mudar o que você vende e onde atende
+        </h1>
         <p className="mt-2 text-suave">
-          Ramos, cidade e tamanho do pedido. Os avisos novos usam isso; o histórico fica como está.
+          Ramos, cidade e tamanho do pedido. Vale pros avisos novos; o histórico fica como está.
         </p>
         <div className="mt-8">
           <FormularioPerfil

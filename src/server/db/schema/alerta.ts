@@ -32,6 +32,10 @@ export const alerta = pgTable(
     clicadoEm: timestamp("clicado_em", { withTimezone: true }),
     // lembrete D-1: preenchido quando o aviso de "prazo acabando" foi enviado
     lembradoEm: timestamp("lembrado_em", { withTimezone: true }),
+    /** Pessoa marcou "quero lembrar deste" no painel. */
+    favoritoEm: timestamp("favorito_em", { withTimezone: true }),
+    /** Pessoa marcou "já disputei" — intenção, não resultado. */
+    disputadoEm: timestamp("disputado_em", { withTimezone: true }),
     criadoEm: timestamp("criado_em", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [

@@ -32,8 +32,8 @@ export function CofreCertidoes() {
       <Card>
         <p className="m-0 text-suave">
           Guarde a <strong className="text-tinta">data de vencimento</strong> que está no documento
-          e, se quiser, o PDF. A gente avisa 15 dias e 3 dias antes. Não afirmamos que o órgão ainda
-          aceita — a verdade está no emissor.
+          e, se quiser, o PDF. A gente avisa 15 dias e 3 dias antes. Não garantimos que o órgão ainda
+          aceite — isso só o emissor confirma.
         </p>
         <p className="mt-2 text-sm text-suave">
           Arquivos ficam privados (só você baixa, logado). Passo a passo de como tirar:{" "}

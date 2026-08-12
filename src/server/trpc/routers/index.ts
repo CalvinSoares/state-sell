@@ -1,5 +1,6 @@
 import { router } from "../trpc";
 import { adminRouter } from "./admin.router";
+import { alertaRouter } from "./alerta.router";
 import { cadastroRouter } from "./cadastro.router";
 import { certidaoRouter } from "./certidao.router";
 import { perfilRouter } from "./perfil.router";
@@ -13,6 +14,7 @@ export const appRouter = router({
   cadastro: cadastroRouter,
   perfil: perfilRouter,
   certidao: certidaoRouter,
+  alerta: alertaRouter,
   admin: adminRouter,
 });
 

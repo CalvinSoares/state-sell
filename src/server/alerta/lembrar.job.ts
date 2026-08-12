@@ -3,7 +3,8 @@ import { env } from "@/src/env";
 import { RAMOS_POR_SLUG } from "@/content/ramos";
 import { log } from "@/src/server/log";
 import { assinarValor } from "@/src/server/auth/token";
-import { marcarFalhou, reivindicarParaLembrete } from "@/src/server/db/repositorios/alerta.repo";
+import { reivindicarParaLembrete } from "@/src/server/db/repositorios/alerta.repo";
+import { certidoesPorAssinantes } from "@/src/server/db/repositorios/certidao.repo";
 import { comporEmail } from "./compor";
 import { enviarEmailAlerta } from "./enviar.action";
 
@@ -27,6 +28,7 @@ async function urlDescadastro(email: string, agoraMs: number): Promise<string | 
 export async function lembrarJob(agora: () => Date = () => new Date()): Promise<ResultadoLembrar> {
   const momento = agora();
   const claimados = await reivindicarParaLembrete(momento, JANELA_LEMBRETE_MS);
+  const certidoes = await certidoesPorAssinantes([...new Set(claimados.map((p) => p.assinanteId))]);
   let enviados = 0;
   let simulados = 0;
   let falhas = 0;
@@ -59,9 +61,12 @@ export async function lembrarJob(agora: () => Date = () => new Date()): Promise<
       p.termosCasados ?? [],
       env.NEXT_PUBLIC_APP_URL,
       momento,
-      undefined,
-      await urlDescadastro(p.email, momento.getTime()),
-      true, // lembrete
+      {
+        descadastrarUrl: await urlDescadastro(p.email, momento.getTime()),
+        lembrete: true,
+        tetoValorCentavos: p.tetoValorCentavos ?? null,
+        certidoes: certidoes.get(p.assinanteId) ?? [],
+      },
     );
 
     try {

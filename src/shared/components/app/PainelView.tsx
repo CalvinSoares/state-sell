@@ -4,6 +4,7 @@ import { prazoTexto } from "@/src/shared/utils/data";
 import { linkDoEdital } from "@/src/server/alerta/compor";
 import { Card } from "@/src/shared/components/ui";
 import { SimulacaoBloco, type ItemSimulacao } from "./SimulacaoView";
+import { AlertaIntencao } from "./AlertaIntencao";
 
 const ROTULO = new Map(RAMOS.map((r) => [r.slug, r.rotulo]));
 
@@ -15,6 +16,8 @@ export type AlertaView = {
   dataEncerramentoProposta: Date | null;
   linkSistemaOrigem: string | null;
   numeroControlePncp: string;
+  favoritoEm?: Date | null;
+  disputadoEm?: Date | null;
 };
 
 type Props = {
@@ -27,6 +30,24 @@ type Props = {
   /** Simulação histórica (15d painel / 30d admin). */
   simulacao?: { dias: number; total: number; itens: ItemSimulacao[] };
 };
+
+/** Ramo que a pessoa mais favorita / disputa — semente de "você costuma olhar X". */
+function ramoQueCostumaOlhar(alertas: AlertaView[]): string | null {
+  const contagem = new Map<string, number>();
+  for (const a of alertas) {
+    if (!a.favoritoEm && !a.disputadoEm) continue;
+    contagem.set(a.ramoSlug, (contagem.get(a.ramoSlug) ?? 0) + 1);
+  }
+  let melhor: string | null = null;
+  let max = 0;
+  for (const [slug, n] of contagem) {
+    if (n > max) {
+      max = n;
+      melhor = slug;
+    }
+  }
+  return max >= 2 ? melhor : null;
+}
 
 /**
  * Renderização dos avisos + perfil. Compartilhada entre o /painel do assinante
@@ -42,6 +63,9 @@ export function PainelView({
   simulacao,
 }: Props) {
   const ehAdmin = contexto === "admin";
+  const costuma = ramoQueCostumaOlhar(alertas);
+  const costumaRotulo = costuma ? (ROTULO.get(costuma) ?? costuma) : null;
+
   return (
     <>
       <Card className="mt-4">
@@ -49,6 +73,12 @@ export function PainelView({
         <p className="mt-1.5 text-suave">
           Atende: {regiao} · Ramos: {ramos.map((s) => ROTULO.get(s) ?? s).join(", ") || "—"}
         </p>
+        {costumaRotulo ? (
+          <p className="mt-1.5 text-sm text-suave">
+            {ehAdmin ? "Costuma olhar" : "Você costuma olhar"}:{" "}
+            <strong className="text-tinta">{costumaRotulo}</strong>
+          </p>
+        ) : null}
         {!ehAdmin ? (
           <p className="mt-2 text-sm">
             <Link className="text-acento" href="/perfil">
@@ -96,6 +126,22 @@ export function PainelView({
                 >
                   Ver o edital
                 </a>
+                {ehAdmin ? (
+                  <p className="mt-2 text-sm text-suave">
+                    {[
+                      a.favoritoEm ? "Favorito" : null,
+                      a.disputadoEm ? "Já disputei" : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") || "Sem intenção marcada"}
+                  </p>
+                ) : (
+                  <AlertaIntencao
+                    alertaId={a.alertaId}
+                    favorito={Boolean(a.favoritoEm)}
+                    disputado={Boolean(a.disputadoEm)}
+                  />
+                )}
               </Card>
             </li>
           ))}

@@ -52,10 +52,15 @@ export type Selecao = {
   dataEncerramentoProposta: Date;
 };
 
-function geograficoBate(c: ContratacaoParaSelecao, p: PerfilAssinante): boolean {
+/** Contratação na região do perfil (cidade(s) ou UF inteira). */
+export function contratacaoNaRegiao(c: ContratacaoParaSelecao, p: PerfilAssinante): boolean {
   if (p.municipiosIbge.length > 0) return p.municipiosIbge.includes(c.codigoIbge);
   if (p.uf) return c.uf === p.uf; // plano estado inteiro
   return false;
+}
+
+function geograficoBate(c: ContratacaoParaSelecao, p: PerfilAssinante): boolean {
+  return contratacaoNaRegiao(c, p);
 }
 
 function dentroDoTeto(valor: bigint | null, teto: bigint | null): boolean {

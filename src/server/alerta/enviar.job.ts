@@ -8,6 +8,7 @@ import {
   marcarFalhou,
   reivindicarParaEnvio,
 } from "@/src/server/db/repositorios/alerta.repo";
+import { certidoesPorAssinantes } from "@/src/server/db/repositorios/certidao.repo";
 import { comporEmail } from "./compor";
 import { enviarEmailAlerta } from "./enviar.action";
 
@@ -34,6 +35,7 @@ export async function enviarJob(agora: () => Date = () => new Date()): Promise<R
   // Reivindica atomicamente (pendente→enviando): evita envio duplicado se dois
   // ticks se sobrepuserem. Ver auditoria #8.
   const pendentes = await reivindicarParaEnvio();
+  const certidoes = await certidoesPorAssinantes([...new Set(pendentes.map((p) => p.assinanteId))]);
   let enviados = 0;
   let simulados = 0;
   let falhas = 0;
@@ -67,8 +69,12 @@ export async function enviarJob(agora: () => Date = () => new Date()): Promise<R
       p.termosCasados ?? [],
       env.NEXT_PUBLIC_APP_URL,
       momento,
-      await urlNaoEraPraMim(p.alertaId, momento.getTime()),
-      await urlDescadastro(p.email, momento.getTime()),
+      {
+        naoEraPraMimUrl: await urlNaoEraPraMim(p.alertaId, momento.getTime()),
+        descadastrarUrl: await urlDescadastro(p.email, momento.getTime()),
+        tetoValorCentavos: p.tetoValorCentavos ?? null,
+        certidoes: certidoes.get(p.assinanteId) ?? [],
+      },
     );
 
     try {

@@ -21,8 +21,8 @@ export default function CertidoesPage() {
         </p>
         <h1 className="mt-2 text-2xl font-extrabold tracking-tight">Cofre de certidões</h1>
         <p className="mt-2 text-suave">
-          Para não descobrir certidão vencida no dia da disputa. A gente só lembra a data que você
-          informou.
+          Guarde as datas de vencimento pra não esquecer no dia da disputa. A gente só lembra a data
+          que você colocou.
         </p>
         <div className="mt-8">
           <CofreCertidoes />

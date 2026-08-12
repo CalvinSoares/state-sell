@@ -136,6 +136,8 @@ export async function alertasDoAssinante(assinanteId: string, limite = 30) {
       ramoSlug: alerta.ramoSlug,
       status: alerta.status,
       enviadoEm: alerta.enviadoEm,
+      favoritoEm: alerta.favoritoEm,
+      disputadoEm: alerta.disputadoEm,
       orgaoRazaoSocial: contratacao.orgaoRazaoSocial,
       municipioNome: contratacao.municipioNome,
       dataEncerramentoProposta: contratacao.dataEncerramentoProposta,
@@ -149,6 +151,36 @@ export async function alertasDoAssinante(assinanteId: string, limite = 30) {
     .where(eq(alerta.assinanteId, assinanteId))
     .orderBy(sql`${alerta.criadoEm} desc`)
     .limit(limite);
+}
+
+/** Marca / desmarca favorito (só do próprio assinante). */
+export async function definirFavorito(
+  assinanteId: string,
+  alertaId: string,
+  favorito: boolean,
+  agora: Date,
+): Promise<boolean> {
+  const [r] = await db
+    .update(alerta)
+    .set({ favoritoEm: favorito ? agora : null })
+    .where(and(eq(alerta.id, alertaId), eq(alerta.assinanteId, assinanteId)))
+    .returning({ id: alerta.id });
+  return Boolean(r);
+}
+
+/** Marca / desmarca "já disputei". */
+export async function definirDisputado(
+  assinanteId: string,
+  alertaId: string,
+  disputado: boolean,
+  agora: Date,
+): Promise<boolean> {
+  const [r] = await db
+    .update(alerta)
+    .set({ disputadoEm: disputado ? agora : null })
+    .where(and(eq(alerta.id, alertaId), eq(alerta.assinanteId, assinanteId)))
+    .returning({ id: alerta.id });
+  return Boolean(r);
 }
 
 /** Pares (assinante, contratação) que já têm alerta — para não recontá-los no teto. */
@@ -200,10 +232,12 @@ function selectDetalhesAlerta() {
   return db
     .select({
       alertaId: alerta.id,
+      assinanteId: alerta.assinanteId,
       email: assinante.email,
       ramoSlug: alerta.ramoSlug,
       termosCasados: classificacaoItem.termosCasados,
       escala: classificacaoItem.escala,
+      tetoValorCentavos: perfilBusca.tetoValorCentavos,
       // contratação
       orgaoRazaoSocial: contratacao.orgaoRazaoSocial,
       municipioNome: contratacao.municipioNome,
@@ -220,6 +254,10 @@ function selectDetalhesAlerta() {
     })
     .from(alerta)
     .innerJoin(assinante, eq(assinante.id, alerta.assinanteId))
+    .leftJoin(
+      perfilBusca,
+      and(eq(perfilBusca.assinanteId, alerta.assinanteId), eq(perfilBusca.ativo, true)),
+    )
     .innerJoin(contratacao, eq(contratacao.id, alerta.contratacaoId))
     .innerJoin(itemContratacao, eq(itemContratacao.id, alerta.itemIdPrincipal))
     .leftJoin(

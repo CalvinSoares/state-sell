@@ -11,17 +11,13 @@ export default function ProntoPage() {
   return (
     <main className="py-20">
       <Container size="md">
-        <h1 className="text-2xl font-extrabold tracking-tight">
-          Pronto. A partir de agora a gente olha por você.
-        </h1>
+        <h1 className="text-2xl font-extrabold tracking-tight">Pronto. Cadastro confirmado.</h1>
         <p className="mt-4 text-lg text-suave">
-          Todo dia a gente lê o que as prefeituras da sua região publicaram. Quando aparecer algo que
-          serve para você, você recebe um e-mail.
+          Quando sair uma compra na sua região que bata com o que você vende, a gente manda e-mail.
         </p>
         <p className="mt-4 text-suave">
-          Pode ser que passe uma semana sem nada — isso é normal e quer dizer que não apareceu nada
-          que valesse o seu tempo. Todo sábado a gente manda um resumo, mesmo quando não teve nada,
-          para você saber que está funcionando.
+          Pode passar uma semana sem nada — às vezes não aparece o que cabe no seu limite. No sábado
+          chega um resumo do que a gente viu, mesmo sem aviso no meio da semana.
         </p>
       </Container>
     </main>

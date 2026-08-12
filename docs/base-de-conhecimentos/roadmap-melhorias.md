@@ -91,6 +91,13 @@ validar precisão em produção — as definições são um ponto de partida.
 - **4.1 — Trilha "primeira licitação"** (gov.br, cadastro, certidões, envio da proposta). ✔
 - **4.2 — Cofre de certidões** com aviso de vencimento (D-15 e D-3) + PDF privado (Vercel Blob). ✔
 
+## Dinâmica do assinante (11/08/2026)
+
+- **"Vale a pena olhar?"** no e-mail — 3 sinais (ME/EPP, prazo, faixa). ✔
+- **Favoritar + já disputei** no painel (`favorito_em` / `disputado_em`) + “você costuma olhar X”. ✔
+- **Certidão amarrada ao alerta** se vence em ≤15d. ✔
+- **Resumo semanal humano** — abertas na região vs do ramo. ✔
+
 ## Fase 5 — Receita
 
 - **5.1 — Planos + cobrança** (Pix recorrente / Asaas).

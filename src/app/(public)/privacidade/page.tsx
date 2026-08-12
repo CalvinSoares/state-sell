@@ -32,15 +32,15 @@ export default function PrivacidadePage() {
         </p>
         <h1 className="mt-1 text-3xl font-extrabold tracking-tight">Privacidade</h1>
         <p className="mt-2 text-suave">
-          Última atualização: {SITE.privacidadeAtualizadaEm}. Em português, sem juridiquês
-          desnecessário — mas com o que a lei brasileira (LGPD) pede que a gente diga.
+          Última atualização: {SITE.privacidadeAtualizadaEm}. Em português — o que a LGPD pede que a
+          gente diga, sem enrolação.
         </p>
 
         <div className="mt-10 space-y-9 text-[1.05rem] leading-relaxed text-tinta">
-          <Secao titulo="Em uma frase">
+          <Secao titulo="Resumo">
             <p>
-              A gente guarda o mínimo para te avisar quando a prefeitura quer comprar o que você
-              vende — e você pode parar a qualquer momento.
+              Guardamos o mínimo pra te avisar quando a prefeitura quer comprar o que você vende.
+              Você para quando quiser.
             </p>
           </Secao>
 
@@ -107,7 +107,7 @@ export default function PrivacidadePage() {
           <Secao titulo="Para que usamos">
             <ul>
               <li>Enviar avisos de compras públicas que batem com o seu perfil</li>
-              <li>Mandar o resumo semanal (para você saber que o serviço está de olho)</li>
+              <li>Mandar o resumo semanal (mesmo em semana sem aviso)</li>
               <li>Deixar você entrar no painel pelo link do e-mail</li>
               <li>Melhorar o acerto dos avisos com o feedback “não era pra mim”</li>
               <li>

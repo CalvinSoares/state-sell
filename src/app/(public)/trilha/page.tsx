@@ -66,7 +66,7 @@ const PASSOS = [
     corpo: [
       "Em geral: assinar o contrato (ou instrumento equivalente), entregar o que foi pedido, emitir a nota e acompanhar o pagamento.",
       "Prazos de entrega e forma de faturamento estão no edital ou no contrato. Leia com calma antes de assinar.",
-      "Dúvida jurídica ou tributária: contador ou advogado. O Prefeitura Quer avisa da oportunidade; disputar e cumprir é com você.",
+      "Dúvida jurídica ou tributária: contador ou advogado. O Prefeitura Quer avisa da compra; mandar proposta e cumprir é com você.",
     ],
   },
 ];
@@ -106,11 +106,10 @@ export default function TrilhaPage() {
         </ol>
 
         <div className="mt-10 rounded-card border border-borda bg-acento-suave px-5 py-4 text-sm">
-          <strong className="text-tinta">Limite importante:</strong>{" "}
+          <strong className="text-tinta">Só processo:</strong>{" "}
           <span className="text-suave">
-            esta trilha não opina sobre recurso, impugnação, enquadramento tributário ou se “vale a
-            pena” entrar. Quando a pergunta for jurídica, a resposta é: isso é caso para contador ou
-            advogado.
+            esta página não fala se “vale a pena” entrar, nem sobre recurso, impugnação ou
+            enquadramento. Pergunta jurídica → contador ou advogado.
           </span>
         </div>
 

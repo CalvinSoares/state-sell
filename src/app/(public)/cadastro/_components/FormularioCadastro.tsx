@@ -213,15 +213,15 @@ function PreviaOportunidades({
   carregando: boolean;
 }) {
   if (carregando) {
-    return <p className="text-suave">Procurando o que já está aberto para você agora…</p>;
+    return <p className="text-suave">Procurando compras abertas na sua região…</p>;
   }
   if (!previa || previa.itens.length === 0) {
     return (
       <Card>
-        <strong>Nada aberto exatamente pra você neste momento.</strong>
+        <strong>Nada aberto pra você neste momento.</strong>
         <p className="mt-1.5 text-suave">
-          É normal — as compras aparecem o tempo todo. Assim que surgir algo que serve, você recebe o
-          e-mail. No sábado a gente manda um resumo de qualquer jeito.
+          É comum. As compras vão aparecendo. Quando sair algo do seu ramo, o e-mail chega. No sábado
+          mandamos um resumo mesmo se a semana estiver vazia.
         </p>
       </Card>
     );
@@ -229,11 +229,9 @@ function PreviaOportunidades({
   return (
     <div>
       <h2 className="mb-1 text-lg font-bold">
-        Olha o que <span className="text-acento">já está aberto</span> pra você agora
+        O que <span className="text-acento">já está aberto</span> agora
       </h2>
-      <p className="mb-4 text-sm text-suave">
-        Isso é o tipo de aviso que vai chegar no seu e-mail. Acontece todo dia.
-      </p>
+      <p className="mb-4 text-sm text-suave">É o tipo de aviso que chega no e-mail.</p>
       <div className="grid gap-3">
         {previa.itens.map((o, i) => (
           <Card key={i} className="border-l-4 border-l-acento">
@@ -251,8 +249,8 @@ function PreviaOportunidades({
       </div>
       {previa.total > previa.itens.length ? (
         <p className="mt-3 text-sm text-suave">
-          E mais {previa.total - previa.itens.length} abertas agora. Confirme seu e-mail para receber
-          na hora certa.
+          E mais {previa.total - previa.itens.length} abertas agora. Confirme o e-mail pra receber
+          quando surgir a próxima.
         </p>
       ) : null}
     </div>

@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, isNull, lte, or, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import { db } from "@/src/server/db";
 import { assinante, certidao } from "@/src/server/db/schema";
 import type { TipoCertidao } from "@/src/shared/config/certidoes";
@@ -27,6 +27,28 @@ const CAMPOS = {
 
 export async function listarCertidoes(assinanteId: string): Promise<CertidaoLinha[]> {
   return db.select(CAMPOS).from(certidao).where(eq(certidao.assinanteId, assinanteId));
+}
+
+/** Certidões de vários assinantes (lote) — para amarrar aviso no e-mail de alerta. */
+export async function certidoesPorAssinantes(
+  assinanteIds: string[],
+): Promise<Map<string, { tipo: string; vencimentoEm: string }[]>> {
+  const mapa = new Map<string, { tipo: string; vencimentoEm: string }[]>();
+  if (assinanteIds.length === 0) return mapa;
+  const linhas = await db
+    .select({
+      assinanteId: certidao.assinanteId,
+      tipo: certidao.tipo,
+      vencimentoEm: certidao.vencimentoEm,
+    })
+    .from(certidao)
+    .where(inArray(certidao.assinanteId, assinanteIds));
+  for (const l of linhas) {
+    const lista = mapa.get(l.assinanteId) ?? [];
+    lista.push({ tipo: l.tipo, vencimentoEm: l.vencimentoEm });
+    mapa.set(l.assinanteId, lista);
+  }
+  return mapa;
 }
 
 export async function certidaoDoAssinante(

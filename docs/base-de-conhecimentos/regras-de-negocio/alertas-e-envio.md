@@ -15,8 +15,14 @@ Assunto:  A Prefeitura de Sorocaba quer comprar marmita — prazo até quinta
 A Prefeitura de Sorocaba quer comprar marmita.
 
 400 refeições transportadas por mês, para a EMEI Jardim Paulista.
-Valor estimado: R$ 38.400 no ano — dentro do seu limite.
-Exclusivo para micro e pequena empresa.
+
+Vale a pena olhar?
+✓ Reservado para micro e pequena empresa
+✓ Prazo: faltam 3 dias
+✓ Cabe na sua faixa (por volta de R$ 38 mil)
+
+[Se o cofre tem certidão ≤15d:]
+Sua CND federal vence em 8 dias. Renove antes de disputar. [Ver certidões]
 
 Prazo para proposta: quinta, 14/08, às 9h — faltam 3 dias.
 
@@ -35,8 +41,8 @@ Não era pra mim  ·  Mudar o que eu vendo  ·  Parar de receber
 | "quer comprar marmita" | `ramo.rotulo` do casamento — **nunca** `objetoCompra` cru |
 | "400 refeições transportadas por mês" | `quantidade` + `unidadeMedida` + `descricao` do item de maior valor |
 | "para a EMEI Jardim Paulista" | `unidadeOrgao.nomeUnidade` |
-| "R$ 38.400 — dentro do seu limite" | `valorTotalEstimado` + comparação com o teto do perfil |
-| "Exclusivo para micro e pequena empresa" | `item.tipoBeneficio` — **só aparece se o campo disser isso** |
+| Bloco "Vale a pena olhar?" | 3 sinais: `tipoBeneficio` (só afirma exclusividade se o dado diz) · prazo em dias · valor × `teto_valor_centavos` do perfil |
+| Aviso de certidão | cofre (`certidao`) com vencimento ≤15d ou vencida — amarrado ao alerta |
 | "quinta, 14/08, às 9h — faltam 3 dias" | `dataEncerramentoProposta` em `America/Sao_Paulo` |
 | "Ver o edital" | `linkSistemaOrigem`, ou a página do PNCP quando vier `"SEM PUBLICAÇÃO"` |
 | "porque você vende alimentação em Sorocaba" | `termosCasados` do casamento — a explicação |
@@ -51,7 +57,7 @@ Não era pra mim  ·  Mudar o que eu vendo  ·  Parar de receber
 | Prazo com dia da semana **e** contagem | "quinta, 14/08, às 9h — faltam 3 dias" | "14/08/2026 09:00" |
 | Valor por extenso e arredondado | "por volta de R$ 38 mil no ano" | "R$ 38.412,57" |
 | Só afirmar o que o dado sustenta | "Exclusivo para micro e pequena empresa" (com `tipoBeneficio`) | a mesma frase deduzida do valor |
-| Sem promessa de resultado | "você vai saber; disputar é com você" | "aumente seu faturamento" |
+| Sem promessa de resultado | "a gente só avisa; quem manda a proposta é você" | "aumente seu faturamento" |
 | Sem anexo | link | PDF do edital anexado |
 | Um alerta, um e-mail | | digest com cinco oportunidades misturadas |
 
@@ -91,14 +97,14 @@ Vai para **todos** os assinantes ativos, inclusive (e principalmente) quem não 
 Essa semana em Sorocaba
 
 A gente leu 312 compras publicadas na sua região.
-Nenhuma era de alimentação dentro do seu limite — por isso você não
-recebeu nada. Isso acontece, e quer dizer que o serviço está funcionando.
+Tem 3 compras ainda abertas na sua região; nenhuma do seu ramo dentro
+do seu limite. A gente só avisa quando bate — isso é confiança, não silêncio.
 
 Ainda dá tempo:
 · Prefeitura de Votorantim — coffee break — prazo até terça
 ```
 
-Quem não recebeu nada precisa ver que o serviço está vivo. **Silêncio sem explicação é indistinguível de defeito.**
+Quem não recebeu nada precisa ver que o serviço está vivo. **Silêncio sem explicação é indistinguível de defeito.** Preferir contraste região × ramo a “nada aconteceu”.
 
 ---
 

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Status do serviço",
-  description: "Prova de vida da coleta — se o serviço está lendo os anúncios normalmente.",
+  description: "Se a coleta das compras das prefeituras está rodando no prazo.",
   robots: { index: false, follow: false },
 };
 
@@ -44,8 +44,8 @@ export default async function StatusPage() {
         </dl>
 
         <p className="mt-6 text-sm text-suave">
-          A gente lê as compras publicadas pelas prefeituras várias vezes ao longo do dia. Esta
-          página mostra que o robô está de pé.
+          A gente lê as compras publicadas pelas prefeituras ao longo do dia. Esta página mostra se a
+          última coleta rodou no prazo.
         </p>
       </Container>
     </main>

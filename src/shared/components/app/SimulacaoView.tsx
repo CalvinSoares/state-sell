@@ -38,7 +38,7 @@ export function SimulacaoBloco({ dias, total, itens, contexto = "assinante" }: P
           <p className="mt-1.5 text-suave">
             {ehAdmin
               ? "Nenhuma compra coletada casou com este perfil na janela."
-              : "Nas últimas semanas não apareceu compra que batesse com o que você vende na sua região. Isso é normal — e por isso o resumo de sábado existe."}
+              : "Nas últimas semanas não apareceu compra que batesse com o que você vende na sua região. Acontece. Por isso existe o resumo de sábado."}
           </p>
         </Card>
       ) : (

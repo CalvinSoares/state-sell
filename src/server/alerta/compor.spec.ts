@@ -76,15 +76,19 @@ describe("comporEmail", () => {
     expect(e.assunto.toLowerCase()).not.toContain("dispensa");
   });
 
-  it("inclui a linha de exclusividade SÓ quando o dado diz", () => {
-    const com = comporEmail(contratacao(), item({ exclusivoMeEpp: true }), "Alimentação", [], APP, AGORA);
-    expect(com.linhas.some((l) => l.includes("micro e pequena empresa"))).toBe(true);
+  it("bloco 'vale a pena olhar' tem exclusividade SÓ quando o dado diz", () => {
+    const com = comporEmail(contratacao(), item({ exclusivoMeEpp: true }), "Alimentação", [], APP, AGORA, {
+      tetoValorCentavos: 5_000_000n,
+    });
+    expect(com.sinais.some((s) => s.ok === true && s.texto.includes("micro e pequena"))).toBe(true);
 
-    const sem = comporEmail(contratacao(), item({ exclusivoMeEpp: false }), "Alimentação", [], APP, AGORA);
-    expect(sem.linhas.some((l) => l.includes("micro e pequena empresa"))).toBe(false);
+    const sem = comporEmail(contratacao(), item({ exclusivoMeEpp: false }), "Alimentação", [], APP, AGORA, {
+      tetoValorCentavos: 5_000_000n,
+    });
+    expect(sem.sinais.some((s) => s.texto.toLowerCase().includes("não diz"))).toBe(true);
   });
 
-  it("valor nulo omite a linha de valor (nunca 'não informado')", () => {
+  it("valor nulo vira sinal neutro (nunca 'não informado')", () => {
     const e = comporEmail(
       contratacao({ valorTotalEstimadoCentavos: null }),
       item(),
@@ -92,9 +96,10 @@ describe("comporEmail", () => {
       [],
       APP,
       AGORA,
+      { tetoValorCentavos: 5_000_000n },
     );
-    expect(e.linhas.some((l) => l.toLowerCase().includes("não informado"))).toBe(false);
-    expect(e.linhas.some((l) => l.startsWith("Valor estimado"))).toBe(false);
+    expect(e.sinais.some((s) => s.texto.toLowerCase().includes("não informado"))).toBe(false);
+    expect(e.sinais.some((s) => s.texto.toLowerCase().includes("não veio"))).toBe(true);
   });
 
   it("prazo tem dia da semana e contagem", () => {
@@ -142,5 +147,13 @@ describe("comporEmail", () => {
     const e = comporEmail(contratacao(), item(), "Alimentação", ["quentinha", "marmita"], APP, AGORA);
     expect(e.porque).toContain("Sorocaba");
     expect(e.porque).toContain("quentinha");
+  });
+
+  it("amarra aviso de certidão quando vence em breve", () => {
+    const e = comporEmail(contratacao(), item(), "Alimentação", [], APP, AGORA, {
+      certidoes: [{ tipo: "cnd_federal", vencimentoEm: "2026-08-20" }],
+    });
+    expect(e.avisoCertidao).toContain("Renove antes de disputar");
+    expect(e.certidoesUrl).toBe(`${APP}/certidoes`);
   });
 });

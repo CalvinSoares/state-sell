@@ -7,9 +7,9 @@ export const SITE = {
   /** Fallback absoluto se APP_URL / NEXT_PUBLIC_APP_URL não estiver setado no build. */
   urlProducao: "https://prefeitura-quer.vercel.app",
   tituloPadrao:
-    "Prefeitura Quer — a prefeitura da sua cidade quer comprar o que você vende",
+    "Prefeitura Quer — avisa quando a prefeitura quer comprar o que você vende",
   descricao:
-    "A gente avisa quando a prefeitura da sua cidade quer comprar exatamente o que você vende. Você vai saber; disputar é com você.",
+    "A gente lê os anúncios das prefeituras e manda e-mail quando aparecer compra do que você vende. Sem jargão. Sem promessa de contrato ganho.",
   locale: "pt_BR",
   idioma: "pt-BR",
   /** Contato para pedidos LGPD (acesso, correção, exclusão). */

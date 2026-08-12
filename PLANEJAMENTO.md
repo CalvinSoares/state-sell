@@ -11,7 +11,7 @@
 
 Transformar o dado público de compras governamentais — hoje tecnicamente aberto e praticamente inacessível — em **um e-mail decidível em trinta segundos** para quem tem negócio de uma pessoa só.
 
-**A promessa é achar oportunidade, não ganhar contrato.** A frase que se sustenta é: *"você vai saber; disputar é com você."*
+**A promessa é achar oportunidade, não ganhar contrato.** Em copy: a gente avisa; quem manda a proposta é você.
 
 ---
 
@@ -214,7 +214,7 @@ Falta fechar: a rotulagem inicial — que passa a ser feita em `/admin/rotular` 
 |---|---|
 | **Falso positivo mata o produto** | Três alertas errados e a pessoa marca spam — perde-se ela e a reputação do domínio. Métrica de precisão trava o CI; teto de alertas por assinante por dia; botão de feedback em todo e-mail |
 | Dependência de terceiro (PNCP) | Guardar `bruto` de tudo. Contrato validado por Zod na borda: mudança de schema falha alto e explícito, não silenciosamente |
-| Promessa mal calibrada | Copy nunca sugere faturamento. "Você vai saber; disputar é com você" |
+| Promessa mal calibrada | Copy nunca sugere faturamento. "A gente só avisa; quem manda a proposta é você" |
 | Consultoria jurídica | Trilha explica processo. Não opinar sobre recurso, impugnação ou enquadramento |
 | Reputação de domínio | SPF/DKIM/DMARC no dia 1, domínio dedicado para envio, supressão automática em bounce/reclamação |
 | Limite ME/EPP muda por decreto | Nunca constante espalhada — `src/shared/config/limites.ts`, uma fonte, comentada com a norma vigente e a data de conferência |

@@ -20,12 +20,25 @@ const COR = {
   avisoBg: "#fff6e5",
 };
 
+function marcaSinal(ok: boolean | null): string {
+  if (ok === true) return "✓";
+  if (ok === false) return "!";
+  return "·";
+}
+
 export function renderTexto(e: EmailAlerta): string {
+  const sinais = e.sinais.length
+    ? ["", "Vale a pena olhar?", ...e.sinais.map((s) => `${marcaSinal(s.ok)} ${s.texto}`)]
+    : [];
   const partes = [
     e.titulo,
     "",
     ...e.linhas,
+    ...sinais,
     ...(e.avisoEscala ? ["", e.avisoEscala] : []),
+    ...(e.avisoCertidao
+      ? ["", e.avisoCertidao, ...(e.certidoesUrl ? [`Ver certidões: ${e.certidoesUrl}`] : [])]
+      : []),
     "",
     e.prazo,
     "",
@@ -47,8 +60,31 @@ export function renderHtml(e: EmailAlerta): string {
     )
     .join("");
 
+  const sinaisLinhas = e.sinais
+    .map((s) => {
+      const cor =
+        s.ok === true ? COR.acentoEscuro : s.ok === false ? COR.aviso : COR.suave;
+      return `<tr><td style="padding:4px 0;font-size:14px;color:${cor}"><span style="font-weight:700;margin-right:6px">${marcaSinal(s.ok)}</span>${escapar(s.texto)}</td></tr>`;
+    })
+    .join("");
+
+  const sinaisBox = e.sinais.length
+    ? `<table role="presentation" width="100%" style="margin:16px 0 0;background:${COR.acentoClaro};border-radius:8px"><tr><td style="padding:12px 14px">
+        <p style="margin:0 0 6px;font-weight:800;font-size:14px;color:${COR.acentoEscuro}">Vale a pena olhar?</p>
+        <table role="presentation" width="100%">${sinaisLinhas}</table>
+      </td></tr></table>`
+    : "";
+
   const escala = e.avisoEscala
     ? `<p style="margin:14px 0 0;color:${COR.aviso};background:${COR.avisoBg};padding:10px 12px;border-radius:8px;font-size:14px">${escapar(e.avisoEscala)}</p>`
+    : "";
+
+  const certidao = e.avisoCertidao
+    ? `<p style="margin:14px 0 0;color:${COR.aviso};background:${COR.avisoBg};padding:10px 12px;border-radius:8px;font-size:14px">${escapar(e.avisoCertidao)}${
+        e.certidoesUrl
+          ? ` <a href="${escapar(e.certidoesUrl)}" style="color:${COR.aviso};font-weight:700">Ver certidões →</a>`
+          : ""
+      }</p>`
     : "";
 
   const prazoBox = `<table role="presentation" width="100%" style="margin:16px 0 0"><tr><td style="background:${COR.acentoClaro};color:${COR.acentoEscuro};padding:12px 14px;border-radius:8px;font-weight:700;font-size:15px">${escapar(e.prazo)}</td></tr></table>`;
@@ -73,7 +109,9 @@ export function renderHtml(e: EmailAlerta): string {
   const corpo = `
     <h1 style="margin:0;font-size:20px;line-height:1.3;color:${COR.tinta}">${escapar(e.titulo)}</h1>
     <div style="margin-top:14px">${linhas}</div>
+    ${sinaisBox}
     ${escala}
+    ${certidao}
     ${prazoBox}
     ${botoes}`;
 
