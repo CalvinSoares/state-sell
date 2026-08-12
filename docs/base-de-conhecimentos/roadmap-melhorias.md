@@ -88,8 +88,8 @@ validar precisão em produção — as definições são um ponto de partida.
 
 ## Fase 4 — Retenção
 
-- **4.1 — Trilha "primeira licitação"** (gov.br, cadastro, certidões, envio da proposta).
-- **4.2 — Cofre de certidões** com aviso de vencimento (D-15 e D-3).
+- **4.1 — Trilha "primeira licitação"** (gov.br, cadastro, certidões, envio da proposta). ✔
+- **4.2 — Cofre de certidões** com aviso de vencimento (D-15 e D-3) + PDF privado (Vercel Blob). ✔
 
 ## Fase 5 — Receita
 

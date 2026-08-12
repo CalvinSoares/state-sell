@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { assinanteAtual } from "@/src/server/auth/assinante";
 import { painelPorEmail } from "@/src/server/db/repositorios/assinante.repo";
 import { alertasDoAssinante } from "@/src/server/db/repositorios/alerta.repo";
+import { simularParaPerfil } from "@/src/server/db/repositorios/simulacao.repo";
 import { regiaoLabel } from "@/src/server/ibge/municipios";
 import { Container } from "@/src/shared/components/ui";
 import { PainelView } from "@/src/shared/components/app/PainelView";
@@ -16,7 +17,21 @@ export default async function PainelPage() {
   const dados = await painelPorEmail(email);
   if (!dados) redirect("/entrar");
 
+  const agora = new Date();
   const alertas = dados.id ? await alertasDoAssinante(dados.id) : [];
+  const simulacao = dados.id
+    ? await simularParaPerfil(
+        {
+          assinanteId: dados.id,
+          ramos: dados.ramos ?? [],
+          municipiosIbge: dados.municipiosIbge ?? [],
+          uf: dados.uf,
+          tetoValorCentavos: dados.tetoValorCentavos,
+        },
+        agora,
+        15,
+      )
+    : undefined;
 
   return (
     <main className="py-12">
@@ -27,8 +42,9 @@ export default async function PainelPage() {
           regiao={regiaoLabel(dados.municipiosIbge, dados.uf)}
           ramos={dados.ramos ?? []}
           alertas={alertas}
-          agora={new Date()}
+          agora={agora}
           contexto="assinante"
+          simulacao={simulacao}
         />
       </Container>
     </main>

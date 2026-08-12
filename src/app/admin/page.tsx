@@ -4,8 +4,11 @@ import { Container } from "@/src/shared/components/ui";
 
 const CARTOES = [
   { href: "/admin/rotular", titulo: "Rotular itens", desc: "A régua do casamento. Atalhos de teclado." },
+  { href: "/admin/alertas", titulo: "Alertas", desc: "Enviados, pendentes e feedback." },
+  { href: "/admin/ramos", titulo: "Ramos", desc: "Catálogo e progresso de rotulagem." },
+  { href: "/admin/contratacoes", titulo: "Contratações", desc: "Busca livre para diagnóstico." },
+  { href: "/admin/assinantes", titulo: "Assinantes", desc: "Perfil, entrega, simulação 30 dias." },
   { href: "/admin/jobs", titulo: "Jobs", desc: "Coleta: execuções, erros, cursores." },
-  { href: "/admin/assinantes", titulo: "Assinantes", desc: "Perfil, entrega, feedback." },
 ];
 
 export default async function AdminHome() {

@@ -2,8 +2,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { env } from "@/src/env";
 import { consumirLimite, ipDoRequest } from "@/src/server/rate-limit/limitar";
-import { RAMOS } from "@/content/ramos";
-import { FAIXAS_TETO, tetoParaCentavos, type FaixaTeto } from "@/src/shared/config/faixas-teto";
+import { tetoParaCentavos } from "@/src/shared/config/faixas-teto";
 import { assinarSessao, VALIDADE_MAGIC_MS } from "@/src/server/auth/sessao";
 import { criarOuAtualizarAssinante } from "@/src/server/db/repositorios/assinante.repo";
 import { enviarEmailBruto } from "@/src/server/alerta/enviar.action";
@@ -16,8 +15,7 @@ import { RAMOS_POR_SLUG } from "@/content/ramos";
 import { buscarMunicipios, municipioPorCodigo } from "@/src/server/ibge/municipios";
 import { UFS } from "@/src/shared/config/ufs";
 import { publicProcedure, router } from "../trpc";
-
-const SLUGS = RAMOS.map((r) => r.slug) as [string, ...string[]];
+import { CadastroSchema, FAIXAS, SLUGS } from "./input/perfil.schema";
 
 /** Nunca assinar com segredo público. Sem AUTH_SECRET, o fluxo falha alto. */
 function exigirSegredo(): string {
@@ -37,23 +35,6 @@ async function limitarEnvio(headers: Headers, email: string): Promise<void> {
     });
   }
 }
-const FAIXAS = FAIXAS_TETO.map((f) => f.valor) as [FaixaTeto, ...FaixaTeto[]];
-
-const CadastroSchema = z
-  .object({
-    email: z.string().email("Digite um e-mail válido"),
-    nome: z.string().optional(),
-    uf: z.enum(UFS),
-    // abrangência: só a cidade escolhida, ou o estado inteiro
-    abrangencia: z.enum(["cidade", "estado"]),
-    codigoMunicipio: z.string().optional(),
-    ramos: z.array(z.enum(SLUGS)).min(1, "Escolha o que você vende"),
-    teto: z.enum(FAIXAS),
-  })
-  .refine((v) => v.abrangencia !== "cidade" || Boolean(v.codigoMunicipio), {
-    message: "Escolha a sua cidade",
-    path: ["codigoMunicipio"],
-  });
 
 export const cadastroRouter = router({
   buscarMunicipios: publicProcedure

@@ -87,6 +87,34 @@ export async function ativarAssinante(email: string): Promise<void> {
 }
 
 /**
+ * Atualiza só o perfil de busca de um assinante já existente (e-mail fixo).
+ * Vale daqui pra frente — não reprocessa alertas antigos.
+ */
+export async function atualizarPerfilAssinante(
+  email: string,
+  input: Omit<CriarAssinanteInput, "email" | "nome">,
+): Promise<boolean> {
+  return db.transaction(async (tx) => {
+    const [existente] = await tx
+      .select({ id: assinante.id })
+      .from(assinante)
+      .where(eq(assinante.email, email.toLowerCase()));
+    if (!existente) return false;
+
+    await tx.delete(perfilBusca).where(eq(perfilBusca.assinanteId, existente.id));
+    await tx.insert(perfilBusca).values({
+      assinanteId: existente.id,
+      uf: input.uf,
+      municipiosIbge: input.municipiosIbge,
+      ramos: input.ramos,
+      tetoValorCentavos: input.tetoValorCentavos,
+      ativo: true,
+    });
+    return true;
+  });
+}
+
+/**
  * Suprime um assinante (bounce forte ou reclamação de spam). Não apaga —
  * marca status "suprimido" para nunca mais enviar. Ver alertas-e-envio.md.
  * Retorna quantos foram afetados.

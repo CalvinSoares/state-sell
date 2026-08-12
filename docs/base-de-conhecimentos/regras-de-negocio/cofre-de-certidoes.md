@@ -1,7 +1,7 @@
 # Cofre de Certidões — Fase 3
 
 > Descobrir o edital resolve metade. Esta é a outra metade — e é onde mora a retenção.
-> **Status: planejado, não implementado.**
+> **Status: implementado** — datas + status + lembretes D-15/D-3 + PDF privado (Vercel Blob).
 
 ---
 
@@ -76,4 +76,6 @@ Conteúdo estático, em português, sem opinião jurídica:
 
 ## Armazenamento
 
-Vercel Blob ou Cloudflare R2. Decisão fica para o início da Fase 3, quando houver volume real para comparar custo. Requisitos: privado por padrão, URL assinada de validade curta, exclusão real.
+**Vercel Blob (store privado).** Pathname em `certidao.arquivo_chave`; leitura só via
+`GET /api/certidoes/[id]/arquivo` com sessão do assinante (`get()` no servidor).
+Excluir certidão ou “Tirar PDF” apaga o blob de verdade. Env: na Vercel `BLOB_STORE_ID` (OIDC); no local `BLOB_READ_WRITE_TOKEN`.

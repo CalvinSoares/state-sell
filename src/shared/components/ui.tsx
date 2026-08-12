@@ -30,7 +30,7 @@ export function Card({ children, className }: { children: ReactNode; className?:
 }
 
 const BOTAO_BASE =
-  "inline-flex items-center justify-center gap-2 rounded-xl font-bold transition-colors " +
+  "inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl font-bold transition-colors " +
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-acento " +
   "disabled:cursor-default disabled:opacity-60";
 

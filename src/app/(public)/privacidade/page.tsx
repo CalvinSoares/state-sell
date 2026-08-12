@@ -79,6 +79,11 @@ export default function PrivacidadePage() {
             <p>Também podem existir, conforme o uso do serviço:</p>
             <ul>
               <li>Histórico dos avisos que enviamos e se você clicou em “não era pra mim”</li>
+              <li>
+                Se você usar o cofre: tipo de certidão, a <strong>data de vencimento</strong> que
+                você informou (para lembretes) e, se enviar, o <strong>PDF</strong> do documento
+                (arquivo privado — só você baixa quando estiver logado)
+              </li>
               <li>Registros técnicos de entrega de e-mail (envio ok, bounce, reclamação de spam)</li>
               <li>
                 Cookie de sessão quando você entra no painel (só para manter você logado)
@@ -93,8 +98,9 @@ export default function PrivacidadePage() {
               </li>
             </ul>
             <p>
-              <strong>Não pedimos CNPJ, cartão, telefone nem certidão</strong> para te avisar. Se
-              isso mudar no futuro, esta página muda junto — e a gente avisa.
+              <strong>Não pedimos CNPJ, cartão nem telefone</strong> para te avisar. O cofre de
+              certidões é opcional: você pode guardar a data e o PDF; a gente não lê o conteúdo do
+              arquivo automaticamente.
             </p>
           </Secao>
 
@@ -104,6 +110,10 @@ export default function PrivacidadePage() {
               <li>Mandar o resumo semanal (para você saber que o serviço está de olho)</li>
               <li>Deixar você entrar no painel pelo link do e-mail</li>
               <li>Melhorar o acerto dos avisos com o feedback “não era pra mim”</li>
+              <li>
+                Lembrar, se você pediu, que a data de uma certidão que você informou está perto
+                (15 dias e 3 dias antes)
+              </li>
               <li>Parar de enviar se o e-mail voltar (bounce) ou se houver reclamação de spam</li>
               <li>Proteger o serviço contra abuso e fraude</li>
             </ul>

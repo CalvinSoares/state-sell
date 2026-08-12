@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { RAMOS } from "@/content/ramos";
 import { prazoTexto } from "@/src/shared/utils/data";
 import { linkDoEdital } from "@/src/server/alerta/compor";
 import { Card } from "@/src/shared/components/ui";
+import { SimulacaoBloco, type ItemSimulacao } from "./SimulacaoView";
 
 const ROTULO = new Map(RAMOS.map((r) => [r.slug, r.rotulo]));
 
@@ -22,6 +24,8 @@ type Props = {
   agora: Date;
   /** "assinante" (linguagem em 1ª pessoa) ou "admin" (visão de fora). */
   contexto?: "assinante" | "admin";
+  /** Simulação histórica (15d painel / 30d admin). */
+  simulacao?: { dias: number; total: number; itens: ItemSimulacao[] };
 };
 
 /**
@@ -29,7 +33,14 @@ type Props = {
  * e a visão do admin (/admin/assinantes/[id]) — o admin vê exatamente o que a
  * pessoa vê. Sem lógica de dados aqui. Ver backoffice.md.
  */
-export function PainelView({ regiao, ramos, alertas, agora, contexto = "assinante" }: Props) {
+export function PainelView({
+  regiao,
+  ramos,
+  alertas,
+  agora,
+  contexto = "assinante",
+  simulacao,
+}: Props) {
   const ehAdmin = contexto === "admin";
   return (
     <>
@@ -38,6 +49,21 @@ export function PainelView({ regiao, ramos, alertas, agora, contexto = "assinant
         <p className="mt-1.5 text-suave">
           Atende: {regiao} · Ramos: {ramos.map((s) => ROTULO.get(s) ?? s).join(", ") || "—"}
         </p>
+        {!ehAdmin ? (
+          <p className="mt-2 text-sm">
+            <Link className="text-acento" href="/perfil">
+              Mudar o que eu vendo / onde atendo
+            </Link>
+            {" · "}
+            <Link className="text-acento" href="/certidoes">
+              Cofre de certidões
+            </Link>
+            {" · "}
+            <Link className="text-acento" href="/trilha">
+              Como participar da primeira vez
+            </Link>
+          </p>
+        ) : null}
       </Card>
 
       {alertas.length === 0 ? (
@@ -75,6 +101,15 @@ export function PainelView({ regiao, ramos, alertas, agora, contexto = "assinant
           ))}
         </ul>
       )}
+
+      {simulacao ? (
+        <SimulacaoBloco
+          dias={simulacao.dias}
+          total={simulacao.total}
+          itens={simulacao.itens}
+          contexto={contexto}
+        />
+      ) : null}
     </>
   );
 }

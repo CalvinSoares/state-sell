@@ -19,6 +19,12 @@ export const env = createEnv({
     ADMIN_EMAILS: z.string().default(""),
     /** Senha do backoffice (2º fator além da allowlist de e-mail). */
     ADMIN_PASSWORD: z.string().optional(),
+    /**
+     * Vercel Blob — PDFs do cofre.
+     * Na Vercel: BLOB_STORE_ID + OIDC basta. Local: precisa BLOB_READ_WRITE_TOKEN.
+     */
+    BLOB_READ_WRITE_TOKEN: z.string().min(1).optional(),
+    BLOB_STORE_ID: z.string().min(1).optional(),
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   },
   client: {
@@ -34,6 +40,8 @@ export const env = createEnv({
     AUTH_SECRET: process.env.AUTH_SECRET,
     ADMIN_EMAILS: process.env.ADMIN_EMAILS,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
+    BLOB_STORE_ID: process.env.BLOB_STORE_ID,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL,
   },

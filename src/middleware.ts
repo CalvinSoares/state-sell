@@ -10,7 +10,11 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const segredo = process.env.AUTH_SECRET;
 
-  if (pathname.startsWith("/painel")) {
+  if (
+    pathname.startsWith("/painel") ||
+    pathname.startsWith("/perfil") ||
+    pathname.startsWith("/certidoes")
+  ) {
     const token = req.cookies.get(NOME_COOKIE_PUBLICO)?.value;
     const email = segredo ? await verificarSessao(token, segredo, Date.now(), "assinante") : null;
     if (!email) {
@@ -39,5 +43,13 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/painel/:path*", "/painel"],
+  matcher: [
+    "/admin/:path*",
+    "/painel/:path*",
+    "/painel",
+    "/perfil/:path*",
+    "/perfil",
+    "/certidoes/:path*",
+    "/certidoes",
+  ],
 };

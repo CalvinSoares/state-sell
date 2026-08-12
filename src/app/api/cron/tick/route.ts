@@ -4,12 +4,13 @@ import { casarJob } from "@/src/server/coleta/casar.job";
 import { alertarJob } from "@/src/server/alerta/alertar.job";
 import { enviarJob } from "@/src/server/alerta/enviar.job";
 import { lembrarJob } from "@/src/server/alerta/lembrar.job";
+import { lembrarCertidoesJob } from "@/src/server/certidoes/lembrar.job";
 
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 
 /**
- * Pipeline diário em uma invocação: coleta → casar → alertar → enviar.
+ * Pipeline diário em uma invocação: coleta → casar → alertar → enviar → lembretes.
  * Feito para o plano Hobby (1 cron/dia). Cada etapa é idempotente; se o tempo
  * acabar na coleta, as demais pegam o que já entrou e o próximo tick continua.
  * Ver coleta-e-jobs.md e ADR-002.
@@ -32,6 +33,16 @@ export async function GET(req: Request) {
   const alertar = await etapa(alertarJob);
   const enviar = await etapa(enviarJob);
   const lembrar = await etapa(lembrarJob);
+  const lembrarCertidoes = await etapa(lembrarCertidoesJob);
 
-  return Response.json({ ok: true, etapa: "tick", coletar, casar, alertar, enviar, lembrar });
+  return Response.json({
+    ok: true,
+    etapa: "tick",
+    coletar,
+    casar,
+    alertar,
+    enviar,
+    lembrar,
+    lembrarCertidoes,
+  });
 }
